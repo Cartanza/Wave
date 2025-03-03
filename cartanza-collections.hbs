@@ -1,0 +1,26 @@
+{{!< default}}
+
+{{!-- The tag above means: insert everything in this file
+into the {body} tag of the default.hbs template --}}
+
+<div class="cartanza-collection-grid" style="margin-top:30px;">
+{{#foreach cartanzacollections}}
+  <div class="cartanza-collection-card">
+    {{#link href=(concat '/collections/' slug '/') activeClass="current"}}
+      <div class="cartanza-collection-card-picture">
+          <img class="cartanza-collection-card-picture-background" src="/content/images/products/{{img_url image_src}}" width="183" loading="lazy" alt="{{img_url image_alt}}">
+      </div>
+      <div class="cartanza-collection-card-info">
+          <div>
+            <h2 class="cartanza-collection-card-title" title="{{title}}" style="margin:0em;">
+              {{title}}
+            </h2>
+          </div>
+          <div class="cartanza-collection-card-description">
+            {{{description}}}
+          </div>
+      </div>
+    {{/link}}
+  </div>
+{{/foreach}}
+</div>

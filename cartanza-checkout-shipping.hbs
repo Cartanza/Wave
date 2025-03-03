@@ -1,0 +1,185 @@
+{{!< cartanza-checkout}}
+
+<div class="main">
+
+    <h1 class="store_title">{{ @site.title }}</h1>
+    <nav>
+    <ul class="">
+        <li class="breadcrumb">
+            <a class="breadcrumb_link" href="/cart">Cart</a>&nbsp;&gt;
+        </li>
+        <li class="breadcrumb breadcrumb_current" aria-current="step">
+            <a class="breadcrumb_link" href="{{ form.information_link }}">Information</a>&nbsp;&gt;
+        </li>
+        <li class="breadcrumb">
+            <span class="breadcrumb_text">Shipping</span>&nbsp;&gt;
+        </li>
+            <li class="breadcrumb">
+            <a class="breadcrumb_link" href="{{ form.payment_link }}">Payment</a>
+        </li>
+    </ul>
+    </nav>
+    <br/><br/>
+    <div class="main_section">
+        <div class="errors">
+            <ul>
+                {{#foreach errors}}
+                <li>{{message}}</li>
+                {{/foreach}}
+            </ul>
+        </div>
+        <div class="field" style="margin-right: 0.4em;">
+            <div class="field_block_wrapper">
+                <label class="field_label" style="font-size: 14px"><strong>Shipping address:</strong></label>
+                <div style="margin-top: 10px;padding: 10px;">{{ form.shipping_address.first_name }} {{ form.shipping_address.last_name }}</div>
+                <div style="padding: 10px;">{{ form.shipping_address.address1 }}, {{ form.shipping_address.city }}, {{ form.shipping_address.state }} {{ form.shipping_address.zip }}, {{ form.shipping_address.country }}</div>
+            </div>
+        </div>
+        <div class="field field_half" style="min-height: 11em;">
+            {{#if order.requires_shipping}}
+                {{#if (eq available_shipping_rates.length 0)}}
+                <div class="section">
+                    <span>Shipping not required for these product(s).</span>
+                </div>
+                {{/if}}
+            {{else}}
+                <div class="section">
+                    <span>Shipping not required for these product(s).</span>
+                </div>
+            {{/if}}
+            <form action="{{ form.action }}" method="post" id="main_form">
+                {{#if order.requires_shipping}}
+                {{#foreach available_shipping_rates}}
+                <div class="section">
+                    <input type="radio" {{checked}} name="checkout[shipping_rate]" value="{{name}}-{{rate}}" style="margin-right: 12px;">{{name}} - {{formatPrice rate 'USD'}}</input>
+                </div>
+                {{/foreach}}
+                {{/if}}
+                <input type="hidden" name="step" value="payment_method">
+                <input type="hidden" name="previous_step" id="previous_step" value="shipping_method">
+            </form>
+        </div>
+        <div class="field field_half" style="min-height: 11em;">
+            <form action="{{ form.action }}" method="post">
+                <div class="field field_full">
+                    <div class="field_input_wrapper" style="margin-top: 12px;">
+                        <label class="field_label">Discount code</label>
+                        <input class="field_input" placeholder="" size="30" type="text" value="{{ form.discount_code }}" name="checkout[discount_code]"/>
+                    </div>
+                </div>
+            <div class="div_forward">
+                <button name="button" type="submit" id="continue_button" class="continue_button" style="float: right;background-color: #36b373;width:180px;" ><span>Apply discount</span></button>
+            </div>
+            <input type="hidden" name="step" value="discount_method">
+            <input type="hidden" name="previous_step" id="previous_step" value="contact_information">
+            </form>
+        </div>
+        <div class="section">
+            <div class="div_backward">
+                <span><a class="breadcrumb_link" href="{{ form.previous_link }}">&lt; Return to information</a></span>
+            </div>
+            <div class="div_forward">
+                <button name="button" type="button" id="continue_button" class="continue_button" onclick="document.getElementById('main_form').submit();return false;" style="width:180px;margin-right:15px;">
+                    <span>Continue to payment</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <footer class="main_footer" role="contentinfo">
+        <p class="copyright_text">All rights reserved | {{ @site.title }}</p>
+    </footer>
+</div>
+<aside class="sidebar" role="complementary">
+<div class="">
+    {{#if (gt order.items.length 0)}}
+    <table style="width: 90%;">
+        {{#foreach order.items as |item index|}}
+        <tr>
+            <td class="">
+                <div class="product_thumbnail">
+                    <img src="/content/images/products/{{item.variant.image_src}}" alt="{{item.product.title}}" title="{{item.product.title}}" style="width: 100px;heigh=100px;" style="width: 100%;">
+                </div>
+            </td>
+            <td class="product_description"><span>{{ item.product.title }}</span>
+                <span>
+                    {{#if item.variant.optiononevalue}}
+                        - Variant: {{item.variant.optiononevalue.value}}
+                    {{/if}}
+                    {{#if item.variant.optiontwovalue}}
+                        +&nbsp;{{item.variant.optiontwovalue.value}}
+                    {{/if}}
+                    {{#if item.variant.optionthreevalue}}
+                        +&nbsp;{{item.variant.optionthreevalue.value}}
+                    {{/if}}
+                </span>
+            </td>
+            <td class="product_description"><span></span></td>
+            <td class="product_description" align="right"><span>{{ item.quantity }} x {{ formatPrice item.final_price 'USD'}}</span></td>
+        </tr>
+        {{#if (gt ../order.discount_applications.length 0)}}
+            {{#foreach ../order.discount_applications as |discount_application index|}}
+            {{#if (eq discount_application.variants_id item.variants_id)}}
+            <tr>
+                <td class="product_description"></td>
+                <td class="product_description"><span>Discount:</span></td>
+                <td class="product_description">{{ discount_application.title }}:&nbsp;-{{ formatPrice discount_application.total_allocated_amount 'USD' }}</td>
+                <td class="product_description"></td>
+            </tr>
+            {{/if}}
+            {{/foreach}}
+        {{/if}}
+        {{/foreach}}
+        <tr>
+            <td class="product_description">&nbsp;</td>
+            <td class="product_description">&nbsp;</td>
+            <td class="product_description">&nbsp;</td>
+            <td class="product_description">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="product_description"><span>Sub total</span></td>
+            <td class="product_description"></td>
+            <td class="product_description"></td>
+            <td class="product_description" align="right"><span>{{ formatPrice order.subtotal_price 'USD'}}</span></td>
+        </tr>
+        {{#foreach order.discount_applications}}
+            <tr>
+            <td class="product_description"><span>Discount: {{ title }}</span></td>
+            <td class="product_description"></td>
+            <td class="product_description" align="right"><span>Savings: -{{ formatPrice total_allocated_amount 'USD'}}</span></td>
+            <td class="product_description" align="right">
+            {{#if (eq target_selection "all")}}
+                <span>-{{ formatPrice total_allocated_amount 'USD'}}
+            {{/if}}
+            </td>
+            </tr>
+        {{/foreach}}
+        <tr>
+            <td class="product_description"><span>Total discounts</span></td>
+            <td class="product_description"></td>
+            <td class="product_description" align="right"><span>Your total savings: -{{ formatPrice order.total_discount 'USD'}}</span></td>
+            <td class="product_description"></td>
+        </tr>
+        <tr>
+            <td class="product_description"><span>Shipping</span></td>
+            <td class="product_description"></td>
+            <td class="product_description"></td>
+            <td class="product_description" align="right"><span>{{ formatPrice order.shipping_price 'USD'}}</span></td>
+        </tr>
+        {{#foreach order.tax_lines}}
+        <tr>
+            <td class="product_description"><span>{{ title }}</span></td>
+            <td class="product_description"></td>
+            <td class="product_description"></td>
+            <td class="product_description" align="right"><span>{{ formatPrice price 'USD'}}</span></td>
+        </tr>
+        {{/foreach}}
+        <tr>
+            <td class="total_description"><span>Total</span></td>
+            <td class="product_description"></td>
+            <td class="total_description"></td>
+            <td class="total_description" align="right"><span style="font-size: 1.7em;">{{ formatPrice order.total_price 'USD'}}</span></td>
+        </tr>
+    </table>    
+    {{/if}}
+</div>
+</aside>

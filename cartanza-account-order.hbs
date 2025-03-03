@@ -1,0 +1,188 @@
+{{!< default}}
+
+<style>
+.table-bordered {
+    border: 1px solid #e9ecef;
+}
+.table-bordered thead td, .table-bordered thead th {
+    border-bottom-width: 2px;
+}
+.table-bordered td, .table-bordered th {
+    border: 1px solid #e9ecef;
+}
+.table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-collapse: collapse;
+}
+.text-center {
+    text-align: center!important;
+}
+.table td, .table th {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #e9ecef;
+}
+</style>
+
+<div class="container" style="margin-right: auto;margin-left: auto;padding-right: 15px;padding-left: 15px;max-width: var(--container-width);width: 100%;">
+  <div class="row">
+    <div id="content" class="col-sm-12 contact-form">
+
+      <h3>My Account</h3>
+
+      <p><a href="/account">Return to Account Details</a></p>
+
+      <div class="grid">
+
+        <div class="grid-item two-thirds medium-down--one-whole">
+            <h3>Order #<span style="text-transform: uppercase;">{{ order.id }}</span></h3>
+
+            
+            <p>Placed on {{ date order.created_at format="YYYY-MM-DD" }}</p>
+
+          {{#if order.cancelled}}
+          <div class="errors">
+            <h5>Cancelled on {{ date order.cancelled_at format="YYYY-MM-DD" }}</h5>
+            <p>Reason: {{ order.cancel_reason }}</p>
+          </div>
+          {{/if}}
+
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th class="text-center">Product</th>
+                <th class="text-center">SKU</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#foreach order.items as |item index|}}
+              <tr id="{{ item.id }}">
+                <td class="text-center">
+                  <a href="/products/{{ item.product.slug }}">
+                    {{ item.product.title }}
+                    {{#if variant.optiononevalue}}
+					- {{variant.optiononevalue.value}}
+                    {{/if}}
+                    {{#if variant.optiontwovalue}}
+                        +&nbsp;{{variant.optiontwovalue.value}}
+                    {{/if}}
+                    {{#if variant.optionthreevalue}}
+                        +&nbsp;{{variant.optionthreevalue.value}}
+                    {{/if}}
+                  </a>
+                  {{#if item.fulfillment }}
+                  <div class="note">
+                    Fulfillment: {{ item.fulfillment }}
+                  </div>
+                  {{/if}}
+                </td>
+                <td class="text-center">{{ item.sku }}</td>
+                <td class="text-center">{{ formatPrice item.final_price 'USD' }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-center">{{ formatPrice item.total_price 'USD' }}</td>
+              </tr>
+              {{/foreach}}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">Subtotal:</td>
+                <td class="text-center">{{ formatPrice order.subtotal_price 'USD' }}</td>
+              </tr>
+
+              {{#foreach order.discount_applications as |discount| }}
+              <tr class="order_summary discount">
+                <td colspan="4">{{ discount.title }}:</td>
+                <td class="text-center">-{{ formatPrice discount.total_allocated_amount 'USD' }}</td>
+              </tr>
+              {{/foreach}}
+
+              {{#foreach order.shipping_methods as |shipping_method| }}
+              <tr>
+                <td colspan="4">Shipping: ({{ shipping_method.title }}):</td>
+                <td class="text-center">{{ formatPrice shipping_method.price 'USD' }}</td>
+              </tr>
+              {{/foreach}}
+
+              {{#foreach order.tax_lines as |tax_line| }}
+              <tr>
+                <td colspan="4">Tax: ({{ tax_line.title }} {{ formatPrice tax_line.rate 'USD' }}%):</td>
+                <td class="text-center">{{ formatPrice tax_line.price 'USD' }}</td>
+              </tr>
+              {{/foreach}}
+
+              <tr>
+                <td colspan="4"><strong>Total:</strong></td>
+                <td class="text-center"><strong>{{ formatPrice order.total_price 'USD' }} {{ order.currency.iso_code }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+
+        </div>
+
+        <div class="grid-item one-third medium-down--one-whole">
+          <table class="table table-bordered table-hover">
+            <tbody><tr>
+              <td class="text-left" width="50%">
+                <h4>Billing Address:</h4>
+
+                <p><strong>Payment Status:</strong> {{ order.financial_status }}</p>
+
+                <h5>{{ order.billing_address.first_name }} {{ order.billing_address.last_name }}</h5>
+                <p>
+                  {{#if order.billing_address.company }}
+                    {{ order.billing_address.company }}<br>
+                  {{/if}}
+                  {{#if order.billing_address.address1 }}                
+                    {{ order.billing_address.address1 }}<br>
+                  {{/if}}
+                  {{ order.billing_address.city }}<br>
+                  {{#if order.billing_address.state }}
+                    {{ order.billing_address.state }}<br>
+                  {{/if}}
+                  {{ order.billing_address.zip }}<br>
+                  {{ order.billing_address.country }}<br>
+                  {{#if order.billing_address.phone }}
+                    {{ order.billing_address.phone }}
+                  {{/if}}
+                </p>
+              </td>
+              <td class="text-right">
+                <h3>Shipping Address:</h3>
+
+                <p><strong>Fulfillment Status:</strong> {{ order.fulfillment_status }}</p>
+
+                <h5>{{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}</h5>
+                <p>
+                  {{#if order.shipping_address.company }}
+                    {{ order.shipping_address.company }}<br>
+                  {{/if}}
+                  {{#if order.shipping_address.address1 }}                
+                    {{ order.shipping_address.address1 }}<br>
+                  {{/if}}
+                  {{ order.shipping_address.city }}<br>
+                  {{#if order.shipping_address.state }}
+                    {{ order.shipping_address.state }}<br>
+                  {{/if}}
+                  {{ order.shipping_address.zip }}<br>
+                  {{ order.shipping_address.country }}<br>
+                  {{#if order.shipping_address.phone }}
+                    {{ order.shipping_address.phone }}
+                  {{/if}}
+                </p>
+              </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

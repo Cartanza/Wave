@@ -1,0 +1,283 @@
+{{!< default}}
+
+<style>
+.order-table {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-right: 20px;
+}
+
+.address-table {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.table-header {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+.table-header, .table-row {
+  display: contents;
+}
+
+.order-table > div {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.address-table > div {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.table-row:last-child > div {
+  border-bottom: none;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .order-table {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+  }
+
+  .table-row > div {
+    padding: 5px;
+  }
+
+  .table-row > div::before {
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}
+</style>
+
+<div class="container" style="margin-left:1em;width: var(--container-width);margin:auto;">
+      
+      <div class="gh-portal-section flex">
+        <form action="/account/edit" method="post" style="margin: auto;">
+        {{#if errors}}
+          <div class="errors" style="margin-top: 1em;">
+            <h3>Please correct these errors:</h3>
+            <ul>
+                {{#foreach errors}}
+                <li>{{message}}</li>
+                {{/foreach}}
+            </ul>
+          </div>
+        {{/if}}
+        <div style="margin: auto;display:flex;">
+            <div style="flex-grow:1;">
+              <h2>Account Details:</h2>
+              {{#if (eq @member.status "free")}}
+                <p>You currently have a free membership, upgrade to a paid subscription for full access.</p>
+              {{else}}
+                <h3>Membership: {{@member.subscriptions.[0].tier.name}}</h3>
+                <p>{{@member.subscriptions.[0].plan.nickname}} - Expires: {{date @member.subscriptions.[0].tier.expiry_at "dd mmm YYYY"}}</p>
+              {{/if}}
+            </div>
+            <div style="margin-bottom: .5em;flex-direction: column;display: flex;justify-content: flex-end;">
+              <a name="view-plans" href="/account/#/portal/account/plans/" class="gh-portal-btn gh-portal-btn-branded" style="display: flex;background: var(--ghost-accent-color);color: white;width: 300px;">
+                <span>
+                  {{#if (eq @member.status "free")}}
+                    View plans
+                  {{else}}
+                    Change plans
+                  {{/if}}
+                </span>
+              </a>
+            </div>
+        </div>
+        <div class="gh-portal-list">
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <div id="name_email_display" >
+                <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">{{@member.name}}</h3>
+                <p id="email_display">{{@member.email}}</p>
+              </div>
+              <div id="name_email_input" style="display:none;">
+                <div style="width: 80%;">
+                  <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Name </label></div>
+                  <input data-test-input="name" id="name_input" class="gh-portal-input" type="text" name="member[name]"
+                    placeholder="Jamie Larson" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Email"
+                    value="{{@member.name}}">
+                </div>
+                <div style="width: 80%;">
+                  <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Email </label></div>
+                  <input data-test-input="email" id="email_input" class="gh-portal-input" type="emaile" name="member[email]"
+                    placeholder="jamie@example.com" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Email"
+                    value="{{@member.email}}">
+                </div>
+              </div>
+            </div>
+            <div style="display: flex;align-items: center;color: green;margin-top:15px;">
+              <div class="gh-portal-for-switch" data-test-switch="switch-input">
+                <button type="button" onclick="toggleEditNameEmail()" aria-label="Edit" style="background: white;border: none;">
+                    <i class="fa fa-2x fa-pencil" aria-hidden="true" style="color:var(--ghost-accent-color);"></i>
+                </button>
+              </div>
+            </div>
+          </section>
+          {{#foreach newsletters as |newsletter|}}
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <h3 style="margin: 0.5em 0px 0.5em;">{{newsletter.name}}</h3>
+              <p>{{newsletter.description}}</p>
+            </div>
+            <div style="display: flex;align-items: center;color: green;margin-top:15px;">
+              <div class="gh-portal-toggle-checked gh-portal-checkmark-container" data-testid="checkmark-container" style="color: green;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="gh-portal-checkmark-icon" alt="">
+                  <defs>
+                    <style>
+                      .a {
+                        fill: none;
+                        stroke: currentColor;
+                        stroke-linecap: round;
+                        stroke-linejoin: round;
+                        stroke-width: 1.5px !important;
+                      }
+                    </style>
+                  </defs>
+                  <title>check-circle-1</title>
+                  <path class="a" d="M6,13.223,8.45,16.7a1.049,1.049,0,0,0,1.707.051L18,6.828"></path>
+                  <circle class="a" cx="12" cy="11.999" r="11.25"></circle>
+                </svg></div>
+              <div class="gh-portal-for-switch" data-test-switch="switch-input"><label class="switch" for="{{newsletter.id}}">
+                  <input type="checkbox" id="{{newsletter.id}}" aria-label="" {{#if newsletter.checked}}checked{{/if}}  name="member[newsletters][{{newsletter.id}}]">
+                  <span class="input-toggle-component" data-testid="switch-input"></span></label>
+              </div>
+            </div>
+          </section>
+          {{/foreach}}
+        </div>
+        <div style="display:flex;">
+          <div style="flex-grow:1;margin-top:20px;">
+            <button name="submit" id="button-account" onclick="logout(event)" class="gh-portal-btn" style="">
+              <span>
+                <i class="fa fa-user left"></i>
+                Sign out
+              </span>
+            </button>
+          </div>
+          <div class="submit" style="margin-top:20px;">					
+            <button name="submit" id="button-account" type="submit" class="gh-portal-btn gh-portal-btn-branded" style="">
+              <span>
+                <i class="fa fa-user left"></i>
+                Save
+              </span>
+            </button>
+            &nbsp;
+            or <a class="btn-acct" href="/">Return to Site</a>
+          </div>
+        </div>
+        </form>
+      </div>
+
+      <div id="login-account-form" class="gh-portal-logged-out-form-container" style="display:flex;max-width:80%;margin: 0 auto;margin-top:30px;">
+        <div style="width:50%;">
+          <h3>Order History:</h3>
+          {{#if customer.orders}}
+            {{#if (gt customer.orders.length 0)}}
+              <div class="order-table">
+                <div class="table-header">
+                  <div>Order ID</div>
+                  <div>Date</div>
+                  <div>Total</div>
+                </div>
+                {{#foreach customer.orders as |order|}}
+                  <div class="table-row">
+                    <div style="text-transform:uppercase;border-top: 1px solid lightgrey;padding: 5px;">
+                      <a href="/account/order/{{ order.id }}" style="">{{ order.id }}</a>
+                    </div>
+                    <div style="border-top: 1px solid lightgrey;padding: 5px;">{{ date order.created_at format="YYYY-MM-DD" }}</div>
+                    <div style="border-top: 1px solid lightgrey;padding: 5px;">{{ formatPrice order.total_price 'USD' }}</div>
+                  </div>
+                {{/foreach}}
+              </div>
+            {{else}}
+              <p>You haven't placed any orders yet.</p>
+            {{/if}}
+          {{else}}
+              <p>You haven't placed any orders yet.</p>
+          {{/if}}
+        </div>
+        <div style="width:50%;">
+          <div style="margin: auto;display:flex;">
+              <div style="flex-grow:1;">
+                <h2>Account Addresses:</h2>
+              </div>
+              <div style="margin-bottom: .5em;flex-direction: column;display: flex;justify-content: flex-end;">
+                <a name="view-plans" href="/account/address/new/" class="gh-portal-btn gh-portal-btn-branded" style="display: flex;">
+                  <span>Add new</span>
+                </a>
+              </div>
+          </div>
+          {{#if customer.addresses}}
+            {{#if (gt customer.addresses.length 0)}}
+              <div class="address-table">
+                <div class="table-header">
+                  <div>Name</div>
+                  <div>Adress</div>
+                </div>
+                {{#foreach customer.addresses as |address|}}
+                  <div class="table-row">
+                    <div style="border-top: 1px solid lightgrey;padding: 5px;">
+                      <a href="/account/address/{{ address.id }}" style="">{{ address.first_name }} {{ address.last_name }}</a>
+                      {{#if address.default}}
+                          <p>Default address <i class="fs-12 fa fa-check" aria-hidden="true" style="color:#666666;"></i></p>
+                      {{/if}}
+                    </div>
+                    <div style="border-top: 1px solid lightgrey;padding: 5px;">
+                      <a href="/account/address/{{ address.id }}" style="">{{ address.address1 }},{{ address.city }}, {{ address.state }}, {{ address.zip }}</a>
+                    </div>
+                  </div>
+                {{/foreach}}
+              </div>
+            {{/if}}
+          {{else}}
+            <p>You haven't added any addresses yet.</p>
+          {{/if}}
+        </div>
+      </div>
+</div>
+
+
+<script>
+  function toggleEditNameEmail() {
+    const nameEmailInput = document.getElementById("name_email_input");
+    const nameEmailDisplay = document.getElementById("name_email_display");
+    const nameInput = document.getElementById("name_input");
+    const emailInput = document.getElementById("email_input");
+    const nameDisplayValue = document.getElementById("name_display");
+    const emailDisplayValue = document.getElementById("email_display");
+    if (nameEmailInput.style.display == "none") {
+        nameEmailInput.style.display = "block";
+        nameEmailDisplay.style.display = "none";
+    } else {
+        nameEmailInput.style.display = "none";
+        nameEmailDisplay.style.display = "block";
+        nameDisplayValue.innerHTML = nameInput.value;
+        emailDisplayValue.innerHTML = emailInput.value;
+    }
+  }
+
+  function viewPlans(event) {
+    event.preventDefault();
+    window.location.href = '/account/#/portal/account/plans/';
+  }
+</script>

@@ -60,7 +60,7 @@ function getJsFiles(version) {
         jsFiles.push(src(`assets/js/lib/*.js`));
     }
 
-    jsFiles.push(src(`assets/js/main.js`));
+    jsFiles.push(src(`assets/js/*.js`));
 
     return jsFiles;
 }

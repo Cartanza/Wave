@@ -1,0 +1,103 @@
+{{!< default}}
+
+{{!-- The tag above means: insert everything in this file
+into the {body} tag of the default.hbs template --}}
+
+{{#cartanza_product}}
+    <div class="cartanza-product-container" style="display:flex;justify-content: space-between;margin: auto;max-width: var(--container-width);width: 100%;">
+        <div class="cartanza-product-image-container" style="display:flex;width:50%;">
+            <div class="cartanza-product-image-picker-container" style="width:25%;">
+            <ul class="" role="" style="list-style-type: none;" id="product-image-picker">
+            {{#foreach images}}
+                <li class="" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}margin-bottom: 5px;">
+                    <img class="" src="/content/images/products/{{src}}" alt="{{alt}}" style="width: 100%;">
+                    <div class=""></div>
+                </li>
+            {{/foreach}}
+            </ul>
+            </div>
+            <div class="cartanza-product-image-container" style="width:80%;margin-top:1em;">
+                <img class="" src="/content/images/products/{{img_url images.[0].src}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
+            </div>
+        </div>
+        <div class="cartanza-product-description-container" style="padding:20px;width:50%;">
+            <h4 class="">
+                {{ title }}
+            </h4>
+            <span id="" class="">
+                <span class=""><span class="money">{{formatPrice variants.[0].price 'USD'}}</span></span>
+            </span>
+            <p>{{{description}}}</p>
+            <div class="cartanza-product-form-container">
+                <form action="/cart/add" method="post" enctype="multipart/form-data" id="form_buy">
+                <div class="cartanza-product-form-select-container" style="margin: 20px;border: 1px solid #e6e6e6 !important;border-radius: 2px;">
+                    <select name="id" id="variant-selector" class="form-control" style="display: block;width: 100%;padding: .5rem .75rem;color: #495057;border:1px solid rgba(0, 0, 0, .15);border-radius:.25rem;">
+                        {{#foreach variants}}
+                        {{#if (gt inventory_quantity 0)}}
+                        <option data-sku="{{ sku }}" value="{{ id }}">
+                            {{#if optiononevalue.value}}
+                                {{ optiononevalue.value }}
+                            {{else}}
+                                {{../title}}
+                            {{/if}}
+                            {{#if optiontwovalue.value}}
+                                / {{ optiontwovalue.value }}
+                            {{/if}}
+                            {{#if optionthreevalue.value}}
+                                / {{ optionthreevalue.value }}
+                            {{/if}}
+                             - {{ formatPrice price 'USD' }}
+                        </option>
+                        {{ else }}
+                        <option disabled="disabled">
+                            {{#if optiononevalue.value}}
+                                {{ optiononevalue.value }}
+                            {{else}}
+                                {{../title}}
+                            {{/if}}
+                            {{#if optiontwovalue.value}}
+                                / {{ optiontwovalue.value }}
+                            {{/if}}
+                            {{#if optionthreevalue.value}}
+                                / {{ optionthreevalue.value }}
+                            {{/if}} - Sold out
+                        </option>
+                        {{/if}}
+                        {{/foreach}}
+                    </select>
+                </div>
+                <div class="cartanza-product-form-button-container">
+                    {{#foreach variants}}
+                        {{#if (gt inventory_quantity 0)}}
+                            {{#if (eq @index 0) }}
+                            <div class="cartanza-product-quantity-container" style="margin:20px;display:flex;align-items:center;">
+                            <div class="cartanza-product-input-container" style="border:2px solid #e6e6e6;border-radius: 3px;">
+                            <button type="button" class="" id="button-minus" style="width:42px;height:44px;">
+                                <i class="fs-12 fa fa-minus" aria-hidden="true" style="color:#666666;"></i>
+                            </button>
+                            <input class="" type="text" id="input-quantity" name="quantity" value="1" style="color:#666666;outline:none;border:none;width:50px;height:42px;text-align:center;">
+                            <button type="button" class="" id="button-plus" style="width:42px;height:44px;">
+                                <i class="fs-12 fa fa-plus" aria-hidden="true" style="color:#666666;"></i>
+                            </button>
+                            </div>
+                            <div class="cartanza-product-add-to-cart-button-container" style="margin: 20px;">
+                                <button class="cartanza-product-add-to-cart-button" type="button" name="add" id="button-cart" style="border-radius:20px;background-color:#222222;align-items: center;color: white;text-transform:uppercase;padding:12px 20px;">ADD TO CART</button>
+                            </div>
+                            </div>
+                            {{/if}}
+                        {{/if}}
+                    {{/foreach}}
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{{/cartanza_product}}
+<script>
+    registerProductImagePicker('product-image-picker','product-image-target');
+    registerQuantityButton('button-minus','button-plus', 'input-quantity');
+    registerAddToCartButton('button-cart');
+    window.onload = function() {
+        getCart();
+    }
+</script>

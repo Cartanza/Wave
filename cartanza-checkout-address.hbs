@@ -1,0 +1,252 @@
+{{!< cartanza-checkout}}
+
+<script>
+	function bind(t, e) {
+	    return function() {
+	        return t.apply(e, arguments)
+	    }
+	};
+	function initCountry() {
+	    var t = this.countryEl.getAttribute("data-default");
+	    setSelectorByValue(this.countryEl, t),
+	    this.countryHandler()
+	};
+	function initState() {
+	    var t = this.stateEl.getAttribute("data-default");
+	    t && 0 < this.stateEl.options.length && setSelectorByValue(this.stateEl, t)
+	};
+	function countryHandler() {
+	    var t = (i = this.countryEl.options[this.countryEl.selectedIndex]).getAttribute("data-states")
+	      , e = JSON.parse(t);
+		e.sort((a, b) => a[0].localeCompare(b[0]));
+	    if (this.clearOptions(this.stateEl),
+	    e && 0 == e.length)
+	        this.stateContainer.style.display = "none";
+	    else {
+	        for (var n = 0; n < e.length; n++) {
+	            var i;
+	            (i = document.createElement("option")).value = e[n][0],
+	            i.innerHTML = e[n][1],
+	            this.stateEl.appendChild(i)
+	        }
+	        this.stateContainer.style.display = ""
+	    }
+	};
+	function clearOptions(t) {
+	    for (; t.firstChild; )
+	        t.removeChild(t.firstChild)
+	};
+	function setOptions(t, e) {
+	    var n = 0;
+	    for (e.length; n < e.length; n++) {
+	        var i = document.createElement("option");
+	        i.value = e[n],
+	        i.innerHTML = e[n],
+	        t.appendChild(i)
+	    }
+	};
+	function addListener(t, e, n) {
+	    t.addEventListener ? t.addEventListener(e, n, !1) : t.attachEvent("on" + e, n)
+	};
+	function setSelectorByValue(t, e) {
+	    for (var n = 0, i = t.options.length; n < i; n++) {
+	        var o = t.options[n];
+	        if (e == o.value || e == o.innerHTML)
+	            return t.selectedIndex = n
+	    }
+	};
+</script>
+
+<div class="main">
+
+	<h1 class="store_title">{{ @site.title }}</h1>
+	<nav>
+	<ul class="">
+		<li class="breadcrumb">
+			<a class="breadcrumb_link" href="/cart">Cart</a>&nbsp;&gt;
+		</li>
+		<li class="breadcrumb breadcrumb_current" aria-current="step">
+			<span class="breadcrumb_text">Information</span>&nbsp;&gt;
+		</li>
+		<li class="breadcrumb">
+			<a class="breadcrumb_link" href="{{ form.shipping_link }}">Shipping</a>&nbsp;&gt;
+		</li>
+			<li class="breadcrumb">
+			<a class="breadcrumb_link" href="{{ form.payment_link }}">Payment</a>
+		</li>
+	</ul>
+	</nav>
+
+	<div class="section">
+			{{#if @member}}
+				<div>
+					{{ @member.name }}
+				</div>
+				<div>
+					{{ @member.email }}
+				</div>
+			{{else}}
+				<h3 class="inline">Contact information</h3><span class="inline" style="float: right;margin: 1em 1em;">Already have an account? <a href="/#/portal/signin">Sign in</a></span>
+			{{/if}}
+	</div>
+	<form action="{{ form.action }}" method="post">
+		<div class="main_section">
+        <div class="errors">
+            <ul>
+                {{#foreach errors}}
+                <li>{{message}}</li>
+                {{/foreach}}
+            </ul>
+        </div>
+		{{#if @member}}
+		{{else}}
+		{{#if (eq @site.commerce_customer_accounts_enabled false) }}
+			<div class="field">
+				<div class="field_input_wrapper">
+					<label class="field_label">Email</label>
+					<input class="field_input" placeholder="Email address" size="30" type="text" value="{{ form.email }}" name="checkout[email]"/>
+				</div>
+			</div>
+		{{else}}
+		{{/if}}
+		{{/if}}
+		<input class="field_input_checkbox" type="checkbox" checked="{{ form.accepts_marketing }}" style="margin: 10px 10px;" name="checkout[accepts_marketing]">Keep me up to date on news and exclusive offers</input>
+		<div class="section">
+			<h3>Shipping address</h3>
+		</div>
+		<div class="field field_half">
+			<div class="field_input_wrapper">
+				<label class="field_label">First name</label>
+				<input class="field_input" placeholder="First name" size="30" type="text" value="{{ form.shipping_address.first_name }}" name="checkout[shipping_address][first_name]"/>
+			</div>
+		</div>
+		<div class="field field_half">
+			<div class="field_input_wrapper">
+				<label class="field_label">Last name</label>
+				<input class="field_input" placeholder="Last name" size="30" type="text" value="{{ form.shipping_address.last_name }}" name="checkout[shipping_address][last_name]"/>
+			</div>
+		</div>
+		<div class="field">
+			<div class="field_input_wrapper">
+				<label class="field_label">Address</label>
+				<input class="field_input" placeholder="Address" size="30" type="text" value="{{ form.shipping_address.address1 }}" name="checkout[shipping_address][address1]"/>
+			</div>
+		</div>
+		<div class="field">
+			<div class="field_input_wrapper">
+				<label class="field_label">Apartment, suite (optional)</label>
+				<input class="field_input" placeholder="" size="30" type="text" value="{{ form.shipping_address.address2 }}" name="checkout[shipping_address][address2]"/>
+			</div>
+		</div>
+		<div class="field">
+			<div class="field_input_wrapper">
+				<label class="field_label">City</label>
+				<input class="field_input" placeholder="Entery city" size="30" type="text" value="{{ form.shipping_address.city }}" name="checkout[shipping_address][city]"/>
+			</div>
+		</div>
+		<div class="field field_third">
+			<div class="field_input_wrapper">
+				<label class="field_label_select">
+				<select class="field_input_select" value="{{ form.shipping_address.country }}" id="address_country" name="checkout[shipping_address][country]" class="" data-default="{{ form.shipping_address.country }}">
+					<option value="---" data-states="[]">---</option>
+					<option value="{{US.name}}" data-states="[{{#foreach US.regions}}[&quot;{{name}}&quot;,&quot;{{name}}&quot;]{{#unless @last}},{{/unless}}{{/foreach}}]">{{US.name}}</option>
+					<option value="{{CA.name}}" data-states="[{{#foreach CA.regions}}[&quot;{{name}}&quot;,&quot;{{name}}&quot;]{{#unless @last}},{{/unless}}{{/foreach}}]">{{CA.name}}</option>
+				</select>
+				</label>
+			</div>
+		</div>			
+		<div class="field field_third">
+			<div id="address_state_container" class="field_input_wrapper">
+				<label class="field_label_select">
+				<select class="field_input_select" value="{{ form.shipping_address.state }}" id="address_state" name="checkout[shipping_address][state]" data-default="{{ form.shipping_address.state }}">
+				</select>
+				</label>
+			</div>
+		</div>			
+		<div class="field field_third">
+			<div class="field_input_wrapper">
+				<label class="field_label">Zip/Postal</label>
+				<input class="field_input" placeholder="Zip" size="30" type="text" value="{{ form.shipping_address.zip }}" name="checkout[shipping_address][zip]"/>
+			</div>
+		</div>			
+		<div class="section">
+			<div class="div_backward">
+				<span><a href="/cart">< Return to cart</a></span>
+			</div>
+			<div class="div_forward">
+				<button name="button" type="submit" id="continue_button" class="continue_button" ><span>Continue to shipping &amp; discounts</span></button>
+			</div>
+		</div>
+		<input type="hidden" name="step" value="shipping_method">
+		<input type="hidden" name="previous_step" id="previous_step" value="contact_information">
+		</div>
+	</form>
+	<footer class="main_footer" role="contentinfo">
+		<p class="copyright_text">All rights reserved | {{ @site.title }}</p>
+	</footer>
+</div>
+<aside class="sidebar" role="complementary">
+<div class="">
+	{{#if (gt order.items.length 0)}}
+	<table style="width: 90%;">
+		{{#foreach order.items}}
+		<tr>
+			<td class="">
+				<div class="product_thumbnail">
+					<img src="/content/images/products/{{variant.image_src}}" alt="{{product.title}}" title="{{product.title}}" style="width: 100px;heigh=100px;" style="width: 100%;">
+				</div>
+			</td>
+			<td class="product_description"><span>{{ product.title }}</span>
+			<span>
+				{{#if variant.optiononevalue}}
+					- Variant: {{variant.optiononevalue.value}}
+				{{/if}}
+				{{#if variant.optiontwovalue}}
+					+&nbsp;{{variant.optiontwovalue.value}}
+				{{/if}}
+				{{#if variant.optionthreevalue}}
+					+&nbsp;{{variant.optionthreevalue.value}}
+				{{/if}}
+			</span>
+		</td>
+			<td class="product_description"><span></span></td>
+			<td class="product_description" align="right"><span>{{ quantity }} x {{ formatPrice variant.price 'USD'}}</span></td>
+		</tr>
+		{{/foreach}}
+		<tr>
+			<td class="product_description">&nbsp;</td>
+			<td class="product_description">&nbsp;</td>
+			<td class="product_description">&nbsp;</td>
+			<td class="product_description">&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="product_description" colspan="2"><span>Subtotal</span></td>
+			<td class="product_description"></td>
+			<td class="product_description" align="right"><span>{{ formatPrice order.subtotal_price 'USD' }}</span></td>
+		</tr>
+		<tr>
+			<td class="product_description" colspan="2"><span>Total discount</span></td>
+			<td class="product_description" align="right" colspan="2"><span>Calculated at the next step</span></td>
+		</tr>
+		<tr>
+			<td class="product_description" colspan="2"><span>Shipping</span></td>
+			<td class="product_description" align="right" colspan="2"><span>Calculated at the next step</span></td>
+		</tr>
+		<tr>
+			<td class="total_description" colspan="2"><span>Total</span></td>
+			<td class="total_description"></td>
+			<td class="total_description" align="right"><span style="font-size: 1.7em;">{{ formatPrice order.total_price 'USD' }}</span></td>
+		</tr>
+	</table>    
+	{{/if}}
+</div>
+</aside>
+    
+<script>
+	var countryEl = document.getElementById('address_country');
+	var stateEl = document.getElementById('address_state');
+	var stateContainer = document.getElementById('address_state_container' || e);
+	addListener(this.countryEl, "change", bind(countryHandler, this));
+	initCountry();
+	initState();
+</script>
