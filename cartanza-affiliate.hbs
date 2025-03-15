@@ -1,0 +1,360 @@
+{{!< default}}
+
+<style>
+.cart-items {
+    display: table;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ddd; /* added outer border */
+}
+
+.cart-item {
+    display: table-row;
+}
+
+.cart-item > div {
+    display: table-cell;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-item:first-child > div {
+    border-top: none;
+}
+
+.cart-item:last-child > div {
+    border-bottom: none;
+}
+
+.product-title {
+    width: 10%;
+    font-weight: bold;
+}
+
+.product-variant {
+    width: 15%;
+}
+
+.price {
+    width: 10%;
+    text-align: right;
+}
+
+.total {
+    width: 20%;
+}
+
+.cart-item:first-child {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.cart-item:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.table-header {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+.table-header, .table-row {
+  display: contents;
+}
+
+
+.table-row:last-child > div {
+  border-bottom: none;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .order-table {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+  }
+
+  .table-row > div {
+    padding: 5px;
+  }
+
+  .table-row > div::before {
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}
+</style>
+
+<div class="container" style="margin-left:1em;width: var(--container-width);margin:auto;">
+      
+      <div class="gh-portal-section flex">
+        <form action="/affiliate/edit" method="post" style="margin: auto;">
+        {{#if errors}}
+          <div class="errors" style="margin-top: 1em;">
+            <h3>Please correct these errors:</h3>
+            <ul>
+                {{#foreach errors}}
+                <li>{{message}}</li>
+                {{/foreach}}
+            </ul>
+          </div>
+        {{else}}
+          {{#if affiliate}}
+            <div class="errors" style="margin-top: 1em;">
+              <h3>Thank you for joining our affiliate program.</h3>
+            </div>
+          {{else}}
+            <div class="errors" style="margin-top: 1em;">
+              <h3>Joining our affiliate program offers you a unique opportunity to earn passive income by promoting products you believe in.
+                Whether you're a blogger, social media influencer, or content creator, affiliate marketing can enhance your income streams while aligning with your interests.
+              </h3>
+              <ul>
+                  <li>Flexible and low-cost business model</li>
+                  <li>Allows you to work independently</li>
+                  <li>Leverage your existing audience or building a new one</li>
+              </ul>
+            </div>
+          {{/if}}
+        {{/if}}
+        <div style="margin: auto;display:flex;">
+            <div style="flex-grow:1;">
+              {{#if affiliate}}
+              <h2>Affiliate Details:</h2>
+              {{else}}
+              <h2>Affiliate Signup:</h2>
+              {{/if}}
+            </div>
+        </div>
+        <div class="gh-portal-list">
+
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <div id="affiliate_code_read_only" style="display:{{#if affiliate}}block{{else}}none{{/if}};>
+                <h3 style="margin: 0.5em 0px 0.5em;">Affiliate code: <span id="affiliate_code_display">{{affiliate.affiliate_code}}</span></h3>
+                <p><strong>Commission rate:</strong> {{affiliate.commission_rate}}%</p>
+                <p><strong>Status:</strong> {{affiliate.status}}</p>
+              </div>
+              <div id="affiliate_code_edit" style="display:{{#if affiliate}}none{{else}}block{{/if}};">
+                <div style="width: 80%;">
+                  <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Affiliate code: </label></div>
+                  <input data-test-input="affiliate_code_input" id="affiliate_code_input" class="gh-portal-input" type="text" name="affiliate[affiliate_code]"
+                    placeholder="NAME" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Affiliate Code"
+                    value="{{affiliate.affiliate_code}}"/>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex;align-items: center;color: green;margin-top:15px;">
+              <div class="gh-portal-for-switch" data-test-switch="switch-input">
+              {{#if affiliate}}
+                <button type="button" onclick="toggleEditAffiliateCode()" aria-label="Edit" style="background: white;border: none;">
+                    <i class="fa fa-2x fa-pencil" aria-hidden="true" style="color:var(--ghost-accent-color);"></i>
+                </button>
+              {{/if}}
+              </div>
+            </div>
+          </section>
+
+        {{#if affiliate}}
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <div id="commission_rate_display" >
+                <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">Discount code: {{affiliate.discount.code}}</h3>
+                <p><strong>Discount title:</strong> {{affiliate.discount.title}}</p>
+                {{#if (eq affiliate.discount.type "PercentageDiscount")}}
+                  <p><strong>Discount rate:</strong> {{affiliate.discount.amount}}%</p>
+                {{else}}
+                  <p><strong>Discount amount:</strong> ${{affiliate.discount.amount}}</p>
+                {{/if}}
+              </div>
+            </div>
+          </section>
+        {{/if}}
+
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <div id="payment_method_read_only" style="display:{{#if affiliate}}block{{else}}none{{/if}};>
+                <h3 style="margin: 0.5em 0px 0.5em;">Prefered payment method: <span id="payment_method_display">{{affiliate.payment_method}}</span></h3>
+                <p><strong>Prefered payment details:</strong> <span id="payment_details_display">{{affiliate.payment_details}}</span></p>
+              </div>
+              <div id="payment_method_edit" style="display:{{#if affiliate}}none{{else}}block{{/if}};">
+                <div style="width: 80%;">
+                  <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Prefered payment method: </label></div>
+                  <input data-test-input="payment_method" id="payment_method_input" class="gh-portal-input" type="text" name="affiliate[payment_method]"
+                    placeholder="paypal" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Affiliate payment method"
+                    value="{{affiliate.payment_method}}"/>
+                  <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Prefered payment details: </label></div>
+                  <textarea data-test-input="payment_details" id="payment_details_input" class="gh-portal-input" type="text" name="affiliate[payment_details]"
+                    placeholder="email" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Affiliate payment details">{{affiliate.payment_details}}</textarea>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex;align-items: center;color: green;margin-top:15px;">
+              <div class="gh-portal-for-switch" data-test-switch="switch-input">
+                {{#if affiliate}}
+                  <button type="button" onclick="toggleEditPaymentMethod()" aria-label="Edit" style="background: white;border: none;">
+                      <i class="fa fa-2x fa-pencil" aria-hidden="true" style="color:var(--ghost-accent-color);"></i>
+                  </button>
+                {{/if}}
+              </div>
+            </div>
+          </section>
+
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <div id="social_media_links_read_only" style="display:{{#if affiliate}}block{{else}}none{{/if}};>
+                <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">Social media links:</h3>
+                <p id="social_media_links_display">{{affiliate.social_media_links}}</p>
+              </div>
+              <div id="social_media_links_edit" style="display:{{#if affiliate}}none{{else}}block{{/if}};">
+                <div style="width: 80%;">
+                  <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label">Social media links:</label></div>
+                  <textarea data-test-input="social_media_links" id="social_media_links_input" class="gh-portal-input" type="text" name="affiliate[social_media_links]"
+                    placeholder="Twitter Handle etc" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Social media links">{{affiliate.social_media_links}}</textarea>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex;align-items: center;color: green;margin-top:15px;">
+              <div class="gh-portal-for-switch" data-test-switch="switch-input">
+              {{#if affiliate}}
+                <button type="button" onclick="toggleSocialMediaLinks()" aria-label="Edit" style="background: white;border: none;">
+                    <i class="fa fa-2x fa-pencil" aria-hidden="true" style="color:var(--ghost-accent-color);"></i>
+                </button>
+              {{/if}}
+              </div>
+            </div>
+          </section>
+
+        {{#if affiliate}}
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
+            <div class="gh-portal-list-detail">
+              <div id="commission_rate_display" >
+                <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">Stats:</h3>
+                <p><strong>Total # of clicks:</strong> {{affiliate.total_clicks}}</p>
+                <p><strong>Total # of conversions:</strong> {{affiliate.total_conversions}}</p>
+                <p><strong>Total # of payouts:</strong> {{affiliate.total_payouts}}</p>
+                <p><strong>Total earned:</strong> {{formatPrice affiliate.total_commissions 'USD'}}</p>
+                <p><strong>Total paid:</strong> {{formatPrice affiliate.total_paid 'USD'}}</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper" style="justify-content: center;">
+            <div class="cart-container" style="width: 100%;">
+                <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">Payout details:</h3>
+                <div class="cart-items">
+                    <div class="cart-item">
+                        <div class="product-title">Payout #</div>
+                        <div class="product-variant">Method</div>
+                        <div class="price">Amount</div>
+                        <div class="total">Status</div>
+                        <div class="total">Notes</div>
+                        <div class="total">Date</div>
+                    </div>
+                    {{#foreach affiliate.payouts as |payout index|}}
+                    <div class="cart-item">
+                        <div class="product-title">{{index}}</div>
+                        <div class="product-variant">{{payout.payment_method}}</div>
+                        <div class="price"> {{formatPrice payout.amount 'USD'}}</div>
+                        <div class="total">{{payout.status}}</div>
+                        <div class="total">{{payout.notes}}</div>
+                        <div class="total">{{ date payout.created_at format="YYYY-MM-DD" }}</div>
+                    </div>
+                    {{/foreach}}
+                </div>
+            </div>
+          </section>
+        {{else}}
+          <section class="gh-portal-input-section">
+            <div class="gh-portal-input-labelcontainer"><label for="input-first_name" class="gh-portal-input-label"> I agree to the affiliate terms </label>
+            </div>
+            <input class="field_input_checkbox" type="checkbox" {{#if affiliate.terms_agreed}}checked{{/if}} style="margin: 6px 12px;width: 20px;height: 20px;" name="affiliate[terms_agreed]"></input>
+            <a class="gh-portal-input-label" href="/affiliate-terms" style="color:var(--ghost-accent-color);align-content: center;">Affiliate Terms</a>
+          </section>
+        {{/if}}
+
+        </div>
+        <div style="display:flex;">
+          <div style="flex-grow:1;margin-top:20px;">
+          </div>
+          <div class="submit" style="margin-top:20px;">					
+            <button name="submit" id="button-affiliate" type="submit" class="gh-portal-btn gh-portal-btn-branded" style="">
+              <span>
+                <i class="fa fa-user left"></i>
+                {{#if affiliate}}Save{{else}}Apply{{/if}}
+              </span>
+            </button>
+            &nbsp;
+            or <a class="btn-acct" href="/account">Return to Account</a>
+          </div>
+        </div>
+        </form>
+      </div>
+
+</div>
+
+<script>
+  function toggleEditAffiliateCode() {
+    const affiliateCodeEdit = document.getElementById("affiliate_code_edit");
+    const affiliateCodeReadOnly = document.getElementById("affiliate_code_read_only");
+    const affiliateCodeInput = document.getElementById("affiliate_code_input");
+    const affiliateCodeDisplayValue = document.getElementById("affiliate_code_display");
+    if (affiliateCodeEdit.style.display == "none") {
+        affiliateCodeEdit.style.display = "block";
+        affiliateCodeReadOnly.style.display = "none";
+    } else {
+        affiliateCodeEdit.style.display = "none";
+        affiliateCodeReadOnly.style.display = "block";
+        affiliateCodeDisplayValue.innerHTML = affiliateCodeInput.value;
+    }
+  }
+  function toggleEditPaymentMethod() {
+    const paymentMethodEdit = document.getElementById("payment_method_edit");
+    const paymentMethodReadOnly = document.getElementById("payment_method_read_only");
+    const paymentMethodInput = document.getElementById("payment_method_input");
+    const paymentDetailsInput = document.getElementById("payment_details_input");
+    const paymentMethodDisplayValue = document.getElementById("payment_method_display");
+    const paymentDetailsDisplayValue = document.getElementById("payment_details_display");
+    if (paymentMethodEdit.style.display == "none") {
+        paymentMethodEdit.style.display = "block";
+        paymentMethodReadOnly.style.display = "none";
+    } else {
+        paymentMethodEdit.style.display = "none";
+        paymentMethodReadOnly.style.display = "block";
+        paymentMethodDisplayValue.innerHTML = paymentMethodInput.value;
+        paymentDetailsDisplayValue.innerHTML = paymentDetailsInput.value;
+    }
+  }
+  function toggleSocialMediaLinks() {
+    const socialMediaLinksEdit = document.getElementById("social_media_links_edit");
+    const socialMediaLinksReadOnly = document.getElementById("social_media_links_read_only");
+    const socialMediaLinksInput = document.getElementById("social_media_links_input");
+    const socialMediaLinksDisplayValue = document.getElementById("social_media_links_display");
+    if (socialMediaLinksEdit.style.display == "none") {
+        socialMediaLinksEdit.style.display = "block";
+        socialMediaLinksReadOnly.style.display = "none";
+    } else {
+        socialMediaLinksEdit.style.display = "none";
+        socialMediaLinksReadOnly.style.display = "block";
+        socialMediaLinksDisplayValue.innerHTML = socialMediaLinksInput.value;
+    }
+  }
+  function viewPlans(event) {
+    event.preventDefault();
+    window.location.href = '/account/#/portal/account/plans/';
+  }
+</script>

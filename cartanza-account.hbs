@@ -110,6 +110,9 @@
               <div id="name_email_display" >
                 <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">{{@member.name}}</h3>
                 <p id="email_display">{{@member.email}}</p>
+                {{#if affiliate}}
+                <a class="btn-acct" href="/affiliate/" style="color:var(--ghost-accent-color)">Affiliate Dashboard</a>
+                {{/if}}
               </div>
               <div id="name_email_input" style="display:none;">
                 <div style="width: 80%;">
