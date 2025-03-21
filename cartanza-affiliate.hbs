@@ -144,12 +144,12 @@
 
           <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
             <div class="gh-portal-list-detail">
-              <div id="affiliate_code_read_only" style="display:{{#if affiliate}}block{{else}}none{{/if}};>
+              <div id="affiliate_code_read_only" style="display:{{#if affiliate}}{{#if errors}}none{{else}}block{{/if}}{{else}}none{{/if}};>
                 <h3 style="margin: 0.5em 0px 0.5em;">Affiliate code: <span id="affiliate_code_display">{{affiliate.affiliate_code}}</span></h3>
                 <p><strong>Commission rate:</strong> {{affiliate.commission_rate}}%</p>
                 <p><strong>Status:</strong> {{affiliate.status}}</p>
               </div>
-              <div id="affiliate_code_edit" style="display:{{#if affiliate}}none{{else}}block{{/if}};">
+              <div id="affiliate_code_edit" style="display:{{#if affiliate}}{{#if errors}}block{{else}}none{{/if}}{{else}}block{{/if}};">
                 <div style="width: 80%;">
                   <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Affiliate code: </label></div>
                   <input data-test-input="affiliate_code_input" id="affiliate_code_input" class="gh-portal-input" type="text" name="affiliate[affiliate_code]"
@@ -187,11 +187,11 @@
 
           <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
             <div class="gh-portal-list-detail">
-              <div id="payment_method_read_only" style="display:{{#if affiliate}}block{{else}}none{{/if}};>
+              <div id="payment_method_read_only" style="display:{{#if affiliate}}{{#if errors}}none{{else}}block{{/if}}{{else}}none{{/if}};>
                 <h3 style="margin: 0.5em 0px 0.5em;">Prefered payment method: <span id="payment_method_display">{{affiliate.payment_method}}</span></h3>
                 <p><strong>Prefered payment details:</strong> <span id="payment_details_display">{{affiliate.payment_details}}</span></p>
               </div>
-              <div id="payment_method_edit" style="display:{{#if affiliate}}none{{else}}block{{/if}};">
+              <div id="payment_method_edit" style="display:{{#if affiliate}}{{#if errors}}block{{else}}none{{/if}}{{else}}block{{/if}};">
                 <div style="width: 80%;">
                   <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label"> Prefered payment method: </label></div>
                   <input data-test-input="payment_method" id="payment_method_input" class="gh-portal-input" type="text" name="affiliate[payment_method]"
@@ -216,11 +216,11 @@
 
           <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
             <div class="gh-portal-list-detail">
-              <div id="social_media_links_read_only" style="display:{{#if affiliate}}block{{else}}none{{/if}};>
+              <div id="social_media_links_read_only" style="display:{{#if affiliate}}{{#if errors}}none{{else}}block{{/if}}{{else}}none{{/if}};">
                 <h3 style="margin: 0.5em 0px 0.5em;" id="name_display">Social media links:</h3>
                 <p id="social_media_links_display">{{affiliate.social_media_links}}</p>
               </div>
-              <div id="social_media_links_edit" style="display:{{#if affiliate}}none{{else}}block{{/if}};">
+              <div id="social_media_links_edit" style="display:{{#if affiliate}}{{#if errors}}block{{else}}none{{/if}}{{else}}block{{/if}};">
                 <div style="width: 80%;">
                   <div class="gh-portal-input-label container"><label for="input-email" class="gh-portal-input-label">Social media links:</label></div>
                   <textarea data-test-input="social_media_links" id="social_media_links_input" class="gh-portal-input" type="text" name="affiliate[social_media_links]"
@@ -238,8 +238,16 @@
               </div>
             </div>
           </section>
-
-        {{#if affiliate}}
+          {{#unless affiliate.terms_agreed}}
+          <section class="gh-portal-input-section">
+            <div class="gh-portal-input-labelcontainer"><label for="input-first_name" class="gh-portal-input-label"> I agree to the affiliate terms </label>
+            </div>
+            <input class="field_input_checkbox" type="checkbox" {{#if affiliate.terms_agreed}}checked{{/if}} style="margin: 6px 12px;width: 20px;height: 20px;" name="affiliate[terms_agreed]"></input>
+            <a class="gh-portal-input-label" href="/affiliate-terms" style="color:var(--ghost-accent-color);align-content: center;">Affiliate Terms</a>
+          </section>
+          {{/unless}}
+          {{# if affiliate}}
+          {{#unless (eq affiliate.status "inactive")}}
           <section class="gh-portal-list-toggle-wrapper" data-testid="toggle-wrapper">
             <div class="gh-portal-list-detail">
               <div id="commission_rate_display" >
@@ -278,14 +286,8 @@
                 </div>
             </div>
           </section>
-        {{else}}
-          <section class="gh-portal-input-section">
-            <div class="gh-portal-input-labelcontainer"><label for="input-first_name" class="gh-portal-input-label"> I agree to the affiliate terms </label>
-            </div>
-            <input class="field_input_checkbox" type="checkbox" {{#if affiliate.terms_agreed}}checked{{/if}} style="margin: 6px 12px;width: 20px;height: 20px;" name="affiliate[terms_agreed]"></input>
-            <a class="gh-portal-input-label" href="/affiliate-terms" style="color:var(--ghost-accent-color);align-content: center;">Affiliate Terms</a>
-          </section>
-        {{/if}}
+          {{/unless}}
+          {{/if}}
 
         </div>
         <div style="display:flex;">
