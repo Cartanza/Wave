@@ -94,10 +94,9 @@ into the {body} tag of the default.hbs template --}}
     </div>
 {{/cartanza_product}}
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     registerProductImagePicker('product-image-picker','product-image-target');
     registerQuantityButton('button-minus','button-plus', 'input-quantity');
     registerAddToCartButton('button-cart');
-    window.onload = function() {
-        getCart();
-    }
+});
 </script>

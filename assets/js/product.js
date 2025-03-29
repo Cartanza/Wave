@@ -26,6 +26,11 @@ function registerProductImagePicker(productImagePickerName, productImageTargetNa
     });
 }
 
+function registerAddToCartButton(buttonID) {
+    const addToCartButton = document.getElementById(buttonID);
+    addToCartButton.addEventListener('click', addToCart);
+}
+
 function registerQuantityButton(buttonMinus, buttonPlus, input) {
     const minusButton = document.getElementById(buttonMinus);
     const plusButton = document.getElementById(buttonPlus);
@@ -51,8 +56,6 @@ function registerRemoveButton(removeButtonId) {
         removeItem(removeButton.getAttribute('data-key'));
     });
 }
-
-
 
 async function getCart() {
     try {
@@ -169,7 +172,139 @@ async function removeItem(variantId) {
     }
 }
 
-function registerAddToCartButton(buttonID) {
-    const addToCartButton = document.getElementById(buttonID);
-    addToCartButton.addEventListener('click', addToCart);
+async function initializeForm() {
+    const cartanzaFormDiv = document.getElementById('cartanzaformdiv');
+    if (!cartanzaFormDiv) return;
+
+    const formCode = cartanzaFormDiv.getAttribute('data-contact');
+    if (!formCode) {
+        console.error('No form code provided');
+        return;
+    }
+
+    try {
+        const form = await getForm(formCode);
+
+        if (!form || !form.design) {
+            console.error('Invalid form data');
+            return;
+        }
+
+        renderForm(cartanzaFormDiv, form, formCode);
+    } catch (error) {
+        console.error('Failed to initialize form:', error);
+        // Show user-friendly error message
+        cartanzaFormDiv.textContent = 'Failed to load form. Please try again later.';
+    }
 }
+
+async function getForm(formCode) {
+    const response = await fetch('/form/get.js/?code=' + formCode, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+
+    if (!response.ok) {
+        throw new Error('HTTP error! status: ' + response.status);
+    }
+
+    return await response.json();
+}
+
+function renderForm(container, form, formCode) {
+    const { design } = form;
+    const formElement = document.createElement('form');
+    formElement.action = '/form/add.js/';
+    formElement.method = 'post';
+    formElement.style.cssText = "width:50%;margin:0 auto;text-align:left;";
+
+    // Add hidden input for form code
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'code';
+    hiddenInput.value = formCode;
+    formElement.appendChild(hiddenInput);
+
+    // Add title and description
+    if (design.name) {
+        const titleElement = document.createElement('h2');
+        titleElement.textContent = design.name;
+        formElement.appendChild(titleElement);
+    }
+
+    if (design.description) {
+        const descriptionElement = document.createElement('h3');
+        descriptionElement.textContent = design.description;
+        formElement.appendChild(descriptionElement);
+    }
+
+    // Add form fields
+    if (design.fields && design.fields.length) {
+        design.fields.forEach(field => {
+            const fieldWrapper = document.createElement('div');
+            fieldWrapper.className = 'gh-portal-input-label';
+
+            const label = document.createElement('label');
+            label.textContent = field.title;
+            label.className = 'gh-portal-input-label';
+            fieldWrapper.appendChild(label);
+
+            const input = field.type === 'text' 
+                ? document.createElement('textarea') 
+                : document.createElement('input');
+            
+            input.type = field.type;
+            input.name = field.code;
+            input.className = field.classes;
+            input.style.cssText = field.styles;
+            input.placeholder = field.placeholder;
+            fieldWrapper.appendChild(input);
+
+            formElement.appendChild(fieldWrapper);
+        });
+    }
+
+    // Add submit button
+    const submitButton = document.createElement('button');
+    submitButton.type = 'button';
+    submitButton.className = 'gh-portal-btn gh-portal-btn-branded';
+    submitButton.style.cssText = 'background: var(--ghost-accent-color);color: white;width: 25%;margin-top:30px;';
+    submitButton.innerHTML = '<span>Submit</span>';
+    submitButton.addEventListener('click', () => handleFormSubmit(formElement));
+    formElement.appendChild(submitButton);
+
+    container.appendChild(formElement);
+}
+
+async function handleFormSubmit(formElement) {
+    const submitButton = formElement.querySelector('button[type="button"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span>Submitting...</span>';
+
+    try {
+        const formData = new URLSearchParams(new FormData(formElement));
+        
+        const response = await fetch(formElement.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData.toString(), // Send as URL-encoded string
+        });
+
+        if (response.ok) {
+            formElement.innerHTML = '<h3>Thank you for your feedback!</h3>';
+        } else {
+            throw new Error('Submission failed with status: ' + response.status);
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Submission failed. Please try again.');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<span>Submit</span>';
+    }
+}
+
+// Initialize the form when the page loads
+window.addEventListener('load', initializeForm);

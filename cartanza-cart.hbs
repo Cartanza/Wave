@@ -205,18 +205,20 @@ into the {body} tag of the default.hbs template --}}
         </div>
     </div>
 <script>
-{{#foreach items}}
-registerQuantityButton('button-minus-{{@index}}','button-plus-{{@index}}', 'input-quantity-{{@index}}');
-registerRemoveButton('button-remove-{{@index}}');
-{{/foreach}}
-const updateCartButton = document.getElementById('button-update');
-updateCartButton.addEventListener('click', updateCart);
+document.addEventListener('DOMContentLoaded', function() {
+    {{#foreach items}}
+    registerQuantityButton('button-minus-{{@index}}','button-plus-{{@index}}', 'input-quantity-{{@index}}');
+    registerRemoveButton('button-remove-{{@index}}');
+    {{/foreach}}
+    const updateCartButton = document.getElementById('button-update');
+    updateCartButton.addEventListener('click', updateCart);
+});
 </script>
 {{/cartanza_cart}}
 
 {{else}}
-<div class="container" style="margin-top:10%;margin-left:10%;">
-    <h1 class="page-heading">Your cart is currently empty.</h1>
-    <div>Continue browsing <a href="/collections">here</a>.</div>
-  </div>
+    <div class="container" style="margin-top:10%;margin-left:10%;">
+        <h1 class="page-heading">Your cart is currently empty.</h1>
+        <div>Continue browsing <a href="/collections">here</a>.</div>
+    </div>
 {{/if}}
