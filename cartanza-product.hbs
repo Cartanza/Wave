@@ -28,6 +28,42 @@ into the {body} tag of the default.hbs template --}}
                 <span class=""><span class="money">{{formatPrice variants.[0].price 'USD'}}</span></span>
             </span>
             <p>{{{description}}}</p>
+            {{#if event}}
+                <br/>
+                {{#foreach variants}}
+                    <p> 
+                        {{#if (gt inventory_quantity 0)}}
+                            {{#if optiononevalue.value}}
+                                {{ optiononevalue.value }}
+                            {{else}}
+                                {{../title}}
+                            {{/if}}
+                            {{#if optiontwovalue.value}}
+                                / {{ optiontwovalue.value }}
+                            {{/if}}
+                            {{#if optionthreevalue.value}}
+                                / {{ optionthreevalue.value }}
+                            {{/if}}
+                        {{ else }}
+                            {{#if optiononevalue.value}}
+                                {{ optiononevalue.value }}
+                            {{else}}
+                                {{../title}}
+                            {{/if}}
+                            {{#if optiontwovalue.value}}
+                                / {{ optiontwovalue.value }}
+                            {{/if}}
+                            {{#if optionthreevalue.value}}
+                                / {{ optionthreevalue.value }}
+                            {{/if}} - Sold out
+                        {{/if}}
+                    </p>
+                    <p>
+                        Starts: {{ date starts_at format="MMMM D, YYYY \a\t h:mm A" }}<br/>
+                        Ends: {{ date ends_at format="MMMM D, YYYY \a\t h:mm A" }}<br/>
+                    </p>
+                {{/foreach}}
+            {{/if}}
             <div class="cartanza-product-form-container">
                 <form action="/cart/add" method="post" enctype="multipart/form-data" id="form_buy">
                 <div class="cartanza-product-form-select-container" style="margin: 20px;border: 1px solid #e6e6e6 !important;border-radius: 2px;">

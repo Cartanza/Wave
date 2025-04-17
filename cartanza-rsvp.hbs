@@ -1,0 +1,79 @@
+{{!< default}}
+
+{{!-- The tag above means: insert everything in this file
+into the {body} tag of the default.hbs template --}}
+
+{{#cartanza_product}}
+    <div class="cartanza-product-container" style="display:flex;justify-content: space-between;margin: auto;margin-top: 10%;max-width: var(--container-width);width: 100%;">
+        <div class="cartanza-product-image-container" style="display:flex;width:50%;">
+            <div class="cartanza-product-image-picker-container" style="width:25%;">
+            <ul class="" role="" style="list-style-type: none;" id="product-image-picker">
+            {{#foreach images}}
+                <li class="" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}margin-bottom: 5px;">
+                    <img class="" src="/content/images/products/{{src}}" alt="{{alt}}" style="width: 100%;">
+                    <div class=""></div>
+                </li>
+            {{/foreach}}
+            </ul>
+            </div>
+            <div class="cartanza-product-image-container" style="width:80%;">
+                <img class="" src="/content/images/products/{{img_url images.[0].src}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
+            </div>
+        </div>
+        <div class="cartanza-product-description-container" style="padding:20px;width:50%;">
+            <h4 class="">
+                <a href="/products/{{slug}}">{{ title }}</a>
+            </h4>
+            <span id="" class="">
+                <span class=""><span class="money">{{formatPrice variants.[0].price 'USD'}}</span></span>
+            </span>
+            <p>{{{description}}}</p>
+            {{#if event}}
+                <br/>
+                {{#foreach variants}}
+                    <strong><a href="data:text/calendar;charset=utf8,{{ icsData }}" download="event.ics">Add to Calendar</a></strong>
+                    <p> 
+                        {{#if (gt inventory_quantity 0)}}
+                            {{#if optiononevalue.value}}
+                                {{ optiononevalue.value }}
+                            {{else}}
+                                {{../title}}
+                            {{/if}}
+                            {{#if optiontwovalue.value}}
+                                / {{ optiontwovalue.value }}
+                            {{/if}}
+                            {{#if optionthreevalue.value}}
+                                / {{ optionthreevalue.value }}
+                            {{/if}}
+                        {{ else }}
+                            {{#if optiononevalue.value}}
+                                {{ optiononevalue.value }}
+                            {{else}}
+                                {{../title}}
+                            {{/if}}
+                            {{#if optiontwovalue.value}}
+                                / {{ optiontwovalue.value }}
+                            {{/if}}
+                            {{#if optionthreevalue.value}}
+                                / {{ optionthreevalue.value }}
+                            {{/if}} - Sold out
+                        {{/if}}
+                    </p>
+                    <p>
+                        Starts: {{ date starts_at format="MMMM D, YYYY \a\t h:mm A" }}<br/>
+                        Ends: {{ date ends_at format="MMMM D, YYYY \a\t h:mm A" }}<br/>
+                    </p>
+                {{/foreach}}
+            {{/if}}
+        </div>
+    </div>
+    <div id="cartanzaformdiv" data-form-code="{{ slug }}"/>
+{{/cartanza_product}}
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    registerProductImagePicker('product-image-picker','product-image-target');
+});
+</script>

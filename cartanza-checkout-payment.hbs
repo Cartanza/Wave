@@ -26,7 +26,7 @@
         <div>{{ form.shipping_address.first_name }} {{ form.shipping_address.last_name }}</div>
     </div>
     <div class="main_section">
-    <form action="{{ form.action }}" method="post">
+    <form id="checkout-form" action="{{ form.action }}" method="post">
         <div class="errors">
             <ul>
                 {{#foreach errors}}
@@ -43,6 +43,65 @@
         </div>
         <div class="field">
         {{#if form.checkout_enabled }}
+        {{#if (eq order.total_price 0)}}
+        <script type="text/javascript">
+        function loadDoc() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                }
+            };
+            xhttp.open("GET", "{{{ form.clear_link }}}", true);
+            xhttp.send();
+        }
+
+        async function confirmZeroPayment(button) {
+            button.disabled = true;
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'block';
+
+            const checkoutForm = document.getElementById('checkout-form');
+            const formData = new URLSearchParams(new FormData(checkoutForm));
+            
+            // Send POST request
+            try {
+                const response = await fetch(checkoutForm.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData.toString(),
+                });
+
+                const result = await response.json();
+                spinner.style.display = 'none';
+                if (response.ok) {
+                    console.log('Payment succeeded!', result.paymentIntent);
+                    const confirmSpan = document.getElementById('confirm_message');
+                    confirmSpan.textContent = 'Payment succeeded!';
+                    const linkToHome = document.getElementById('link_to_home');
+                    linkToHome.innerHTML = '';
+                    const continueButton = document.getElementById('continue_button');
+                    continueButton.innerHTML = '<span>Continue shopping</span>';
+                    continueButton.onclick = function() { window.location.href = '/'; return false;};
+                    continueButton.disabled = false;
+                    loadDoc();
+                } else {
+                    // Show error to your customer (e.g., insufficient funds)
+                    const confirmSpan = document.getElementById('confirm_message');
+                    confirmSpan.textContent = 'Payment failed!';
+                    console.log(result.error.message);
+                    button.disabled = false;
+                    alert('There was a problem processing your payment!');
+                }
+            } catch (error) {
+                console.error('Error updating cart:', error);
+            }
+        }
+        </script>
+        {{else}}
         <div class="field_block_wrapper">
             <script type="text/javascript">
                 // Set your publishable key: remember to change this to your live secret key in production
@@ -53,9 +112,9 @@
                 function loadDoc() {
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        console.log(this.responseText);
-                    }
+                        if (this.readyState == 4 && this.status == 200) {
+                            console.log(this.responseText);
+                        }
                     };
                     xhttp.open("GET", "{{{ form.clear_link }}}", true);
                     xhttp.send();
@@ -77,24 +136,24 @@
                             button.disabled = false;
                             alert('There was a problem processing your payment!');
                         } else {
-                        // The payment has been processed!
-                        if (result.paymentIntent.status === 'succeeded') {
-                            // Show a success message to your customer
-                            // There's a risk of the customer closing the window before callback execution
-                            // Set up a webhook or plugin to listen for the payment_intent.succeeded event
-                            // that handles any business critical post-payment actions
-                            console.log('Payment succeeded!', result.paymentIntent);
-                            const confirmSpan = document.getElementById('confirm_message');
-                            confirmSpan.textContent = 'Payment succeeded!';
-                            const linkToHome = document.getElementById('link_to_home');
-                            linkToHome.innerHTML = '';
-                            const continueButton = document.getElementById('continue_button');
-                            continueButton.innerHTML = '<span>Continue shopping</span>';
-                            continueButton.onclick = function() { window.location.href = '/'; return false;};
-                            continueButton.disabled = false;
-                            loadDoc();
-                            alert('Payment succeeded!');
-                        }
+                            // The payment has been processed!
+                            if (result.paymentIntent.status === 'succeeded') {
+                                // Show a success message to your customer
+                                // There's a risk of the customer closing the window before callback execution
+                                // Set up a webhook or plugin to listen for the payment_intent.succeeded event
+                                // that handles any business critical post-payment actions
+                                console.log('Payment succeeded!', result.paymentIntent);
+                                const confirmSpan = document.getElementById('confirm_message');
+                                confirmSpan.textContent = 'Payment succeeded!';
+                                const linkToHome = document.getElementById('link_to_home');
+                                linkToHome.innerHTML = '';
+                                const continueButton = document.getElementById('continue_button');
+                                continueButton.innerHTML = '<span>Continue shopping</span>';
+                                continueButton.onclick = function() { window.location.href = '/'; return false;};
+                                continueButton.disabled = false;
+                                loadDoc();
+                                alert('Payment succeeded!');
+                            }
                         }
                     });
                 }
@@ -143,6 +202,8 @@
                 });
             </script>
         </div>
+        {{/if}}
+
         {{else}}
         <div class="field_block_wrapper">
             <div class="checkout_disabled_message">
@@ -162,9 +223,13 @@
             </div>
             <div class="div_forward">
                 {{#if form.checkout_enabled}}
-                    <button name="button" id="continue_button" class="continue_button" onclick="confirmCardPayment(this, '{{ order.stripe_client_secret }}');return false;"><span>Confirm payment</span></button>
+                {{#if (eq order.total_price 0)}}
+                    <button name="button" id="continue_button" class="continue_button" onclick="confirmZeroPayment(this);return false;" style="width:180px;margin-right:15px;"><span>Confirm</span></button>
                 {{else}}
-                    <button name="button" id="continue_button" class="continue_button" onclick="window.location.replace('/');return false;"><span>Continue shopping</span></button>
+                    <button name="button" id="continue_button" class="continue_button" onclick="confirmCardPayment(this, '{{ order.stripe_client_secret }}');return false;" style="width:180px;margin-right:15px;"><span>Confirm payment</span></button>
+                {{/if}}
+                {{else}}
+                    <button name="button" id="continue_button" class="continue_button" onclick="window.location.replace('/');return false;" style="width:180px;margin-right:15px;"><span>Continue shopping</span></button>
                 {{/if}}
             </div>
         </div>

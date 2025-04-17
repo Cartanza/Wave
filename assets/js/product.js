@@ -178,7 +178,7 @@ async function initializeForm() {
     const cartanzaFormDiv = document.getElementById('cartanzaformdiv');
     if (!cartanzaFormDiv) return;
 
-    const formCode = cartanzaFormDiv.getAttribute('data-contact');
+    const formCode = cartanzaFormDiv.getAttribute('data-form-code');
     if (!formCode) {
         console.error('No form code provided');
         return;
@@ -215,6 +215,8 @@ async function getForm(formCode) {
 }
 
 function renderForm(container, form, formCode) {
+    const params = new URLSearchParams(window.location.search);
+
     const { design } = form;
     const formElement = document.createElement('form');
     formElement.action = '/form/add.js/';
@@ -224,9 +226,18 @@ function renderForm(container, form, formCode) {
     // Add hidden input for form code
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
-    hiddenInput.name = 'code';
+    hiddenInput.name = 'hidden_code';
     hiddenInput.value = formCode;
     formElement.appendChild(hiddenInput);
+    
+    // Add hidden inputs for query parameters
+    params.forEach((value, key) => {
+        const paramInput = document.createElement('input');
+        paramInput.type = 'hidden';
+        paramInput.name = 'hidden_' + key;
+        paramInput.value = value;
+        formElement.appendChild(paramInput);
+    });
 
     // Add title and description
     if (design.name) {
@@ -364,12 +375,12 @@ async function handleFormSubmit(formElement) {
             let index = 0;
             formValues.entries().forEach((entry) => {
                 // skip the first one
-                if(index != 0) {
-                    const field = cartanzaFormDesign.design.fields[index - 1];
+                if(!entry[0].startsWith('hidden_')) {
+                    const field = cartanzaFormDesign.design.fields[index];
                     const value = field.values.find((value) => value.value === entry[1]);
                     score += parseInt(value.points);
+                    index++;
                 }
-                index++;
             });
 
             if(cartanzaFormDesign.type === 'outcomequiz') {
