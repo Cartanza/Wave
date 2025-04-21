@@ -31,8 +31,8 @@ into the {body} tag of the default.hbs template --}}
             {{#if event}}
                 <br/>
                 {{#foreach variants}}
-                    <p> 
-                        {{#if (gt inventory_quantity 0)}}
+                    <p>
+                        {{#if (or (gt inventory_quantity 0) (eq inventory_policy "allow"))}}
                             {{#if optiononevalue.value}}
                                 {{ optiononevalue.value }}
                             {{else}}
@@ -69,7 +69,7 @@ into the {body} tag of the default.hbs template --}}
                 <div class="cartanza-product-form-select-container" style="margin: 20px;border: 1px solid #e6e6e6 !important;border-radius: 2px;">
                     <select name="id" id="variant-selector" class="form-control" style="display: block;width: 100%;padding: .5rem .75rem;color: #495057;border:1px solid rgba(0, 0, 0, .15);border-radius:.25rem;">
                         {{#foreach variants}}
-                        {{#if (gt inventory_quantity 0)}}
+                        {{#if (or (gt inventory_quantity 0) (eq inventory_policy "allow"))}}
                         <option data-sku="{{ sku }}" value="{{ id }}">
                             {{#if optiononevalue.value}}
                                 {{ optiononevalue.value }}
@@ -104,7 +104,7 @@ into the {body} tag of the default.hbs template --}}
                 </div>
                 <div class="cartanza-product-form-button-container">
                     {{#foreach variants}}
-                        {{#if (gt inventory_quantity 0)}}
+                        {{#if (or (gt inventory_quantity 0) (eq inventory_policy "allow"))}}
                             {{#if (eq @index 0) }}
                             <div class="cartanza-product-quantity-container" style="margin:20px;display:flex;align-items:center;">
                             <div class="cartanza-product-input-container" style="border:2px solid #e6e6e6;border-radius: 3px;">
