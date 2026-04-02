@@ -1,10 +1,9 @@
-{{!< default}}
-
+{{#*inline "body"}}
 <div class="content-area">
     <main class="site-main container medium">
         <div class="post-feed">
             {{#foreach posts}}
-                {{> "loop"}}
+                {{> partials/loop}}
             {{/foreach}}
         </div>
     </main>
@@ -14,3 +13,5 @@
 {{#if tag.description}}
     {{#contentFor "description"}}<meta name="description" content="{{tag.description}}">{{/contentFor}}
 {{/if}}
+{{/inline}}
+{{> default}}

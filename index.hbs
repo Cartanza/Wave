@@ -1,13 +1,14 @@
-{{!< default}}
-
+{{#*inline "body"}}
 <div class="gh-outer">
 <main class="site-main gh-inner">
 
     <div class="post-feed gh-feed">
         {{#foreach posts}}
-            {{> "loop"}}
+            {{> partials/loop}}
         {{/foreach}}
     </div>
 
 </main>
 </div>
+{{/inline}}
+{{> default}}

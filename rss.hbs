@@ -10,22 +10,22 @@
     xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0">
 
     <channel>
-        <title>{{@site.title}}</title>
-        <link>{{@site.url}}</link>
-        <description>{{@site.description}}</description>
-        <language>{{@site.locale}}</language>
-        <copyright>{{@site.title}} Copyright {{date format="YYYY"}}</copyright>
-        <atom:link href="{{@site.url}}/rss/" rel="self" type="application/rss+xml" />
-        <lastBuildDate>{{date format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}
+        <title>{{@root.site.title}}</title>
+        <link>{{@root.site.url}}</link>
+        <description>{{@root.site.description}}</description>
+        <language>{{@root.site.locale}}</language>
+        <copyright>{{@root.site.title}} Copyright {{date format="YYYY"}}</copyright>
+        <atom:link href="{{@root.site.url}}/rss/" rel="self" type="application/rss+xml" />
+        <lastBuildDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}
         </lastBuildDate>
-        <itunes:author>{{@site.title}}</itunes:author>
-        <itunes:summary>{{@site.description}}</itunes:summary>
+        <itunes:author>{{@root.site.title}}</itunes:author>
+        <itunes:summary>{{@root.site.description}}</itunes:summary>
         <itunes:owner>
             <itunes:name>Your Name</itunes:name>
             <itunes:email>youremail@example.com</itunes:email>
         </itunes:owner>
         <itunes:explicit>clean</itunes:explicit>
-        <itunes:image href="{{img_url @site.icon absolute="true"}}" />
+        <itunes:image href="{{img_url @root.site.icon absolute="true"}}" />
         <itunes:category text="Technology"></itunes:category>
 
         {{#get "posts" filter="tag:-blog" include="tags,authors" as |episode|}}
@@ -33,7 +33,7 @@
                 <item>
                     <title>{{title}}</title>
                     <link>{{url absolute="true"}}</link>
-                    <pubDate>{{date format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}
+                    <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}
                     </pubDate>
                     <guid isPermaLink="false">{{comment_id}}</guid>
                     <category>
@@ -41,13 +41,13 @@
                     </category>
                     <description>{{custom_excerpt}}</description>
                     <content:encoded>
-                        <![CDATA[ {{content}} ]]>
+                        <![CDATA[ {{{content}}} ]]>
                     </content:encoded>
                     <enclosure url="{{og_description}}" length="0"
                         type="audio/mpeg" />
                     <itunes:subtitle>{{custom_excerpt}}</itunes:subtitle>
                     <itunes:summary>
-                        <![CDATA[ {{content}} ]]>
+                        <![CDATA[ {{{content}}} ]]>
                     </itunes:summary>
                 </item>
             {{/foreach}}

@@ -199,8 +199,25 @@
   }
   .gh-portal-logged-out-form-container {
     width: 100%;
-    max-width: 50%;
+    max-width: 600px;
     margin: 0 auto;
+    padding: 0 20px;
+  }
+  @media (max-width: 600px) {
+    .gh-portal-logged-out-form-container {
+        padding: 0 15px;
+    }
+  }
+  .gh-portal-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 600px) {
+    .gh-portal-input-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
   }
   .gh-portal-input-label {
       color: var(--color-midgrey);

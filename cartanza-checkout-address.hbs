@@ -1,5 +1,4 @@
-{{!< cartanza-checkout}}
-
+{{#*inline "body"}}
 <script>
 	function bind(t, e) {
 	    return function() {
@@ -59,7 +58,7 @@
 
 <div class="main">
 
-	<h1 class="store_title">{{ @site.title }}</h1>
+	<h1 class="store_title">{{ @root.site.title }}</h1>
 	<nav>
 	<ul class="">
 		<li class="breadcrumb">
@@ -78,12 +77,12 @@
 	</nav>
 
 	<div class="section">
-			{{#if @member}}
+			{{#if @root.member}}
 				<div>
-					{{ @member.name }}
+					{{ @root.member.name }}
 				</div>
 				<div>
-					{{ @member.email }}
+					{{ @root.member.email }}
 				</div>
 			{{else}}
 				<h3 class="inline">Contact information</h3><span class="inline" style="float: right;margin: 1em 1em;">Already have an account? <a href="/#/portal/signin">Sign in</a></span>
@@ -98,9 +97,9 @@
                 {{/foreach}}
             </ul>
         </div>
-		{{#if @member}}
+		{{#if @root.member}}
 		{{else}}
-		{{#if (eq @site.commerce_customer_accounts_enabled false) }}
+		{{#if (eq @root.site.commerce_customer_accounts_enabled false) }}
 			<div class="field">
 				<div class="field_input_wrapper">
 					<label class="field_label">Email</label>
@@ -182,12 +181,12 @@
 		</div>
 	</form>
 	<footer class="main_footer" role="contentinfo">
-		<p class="copyright_text">All rights reserved | {{ @site.title }}</p>
+		<p class="copyright_text">All rights reserved | {{ @root.site.title }}</p>
 	</footer>
 </div>
 <aside class="sidebar" role="complementary">
 <div class="">
-	{{#if (gt order.items.length 0)}}
+	{{#if (gt (length order.items) 0)}}
 	<table style="width: 90%;">
 		{{#foreach order.items}}
 		<tr>
@@ -210,7 +209,7 @@
 			</span>
 		</td>
 			<td class="product_description"><span></span></td>
-			<td class="product_description" align="right"><span>{{ quantity }} x {{ formatPrice variant.price 'USD'}}</span></td>
+			<td class="product_description" align="right"><span>{{ quantity }} x {{ formatPrice variant.price order.currency.iso_code}}</span></td>
 		</tr>
 		{{/foreach}}
 		<tr>
@@ -222,7 +221,7 @@
 		<tr>
 			<td class="product_description" colspan="2"><span>Subtotal</span></td>
 			<td class="product_description"></td>
-			<td class="product_description" align="right"><span>{{ formatPrice order.subtotal_price 'USD' }}</span></td>
+			<td class="product_description" align="right"><span>{{ formatPrice order.subtotal_price order.currency.iso_code }}</span></td>
 		</tr>
 		<tr>
 			<td class="product_description" colspan="2"><span>Total discount</span></td>
@@ -235,7 +234,7 @@
 		<tr>
 			<td class="total_description" colspan="2"><span>Total</span></td>
 			<td class="total_description"></td>
-			<td class="total_description" align="right"><span style="font-size: 1.7em;">{{ formatPrice order.total_price 'USD' }}</span></td>
+			<td class="total_description" align="right"><span style="font-size: 1.7em;">{{ formatPrice order.total_price order.currency.iso_code }}</span></td>
 		</tr>
 	</table>    
 	{{/if}}
@@ -250,3 +249,5 @@
 	initCountry();
 	initState();
 </script>
+{{/inline}}
+{{> cartanza-checkout}}

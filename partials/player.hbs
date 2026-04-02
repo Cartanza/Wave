@@ -12,13 +12,13 @@
 
         <header class="post-header">
             <button class="button button-play js-play">
-                {{> "icons/play"}}
-                {{> "icons/pause"}}
+                {{> partials/icons/play}}
+                {{> partials/icons/pause}}
             </button>
             <div class="post-header-wrapper">
                 <h1 class="post-title">{{#is "post"}}{{title}}{{else}}Episode{{/is}}</h1>
                 <div class="post-meta">
-                    <time datetime="{{date format="YYYY-MM-DD"}}">{{date published_at format="DD MMM YYYY"}}</time>
+                    <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="DD MMM YYYY"}}</time>
                     <button class="player-backward">-10s</button>
                     <button class="player-forward">+30s</button>
                     <button class="player-speed">1x</button>

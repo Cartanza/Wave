@@ -4,16 +4,16 @@
     </div>
     <div class="author-wrapper">
         <header class="author-header">
-            <h4 class="author-name"><a href="{{url}}">{{name}}</a></h4>
+            <h4 class="author-name"><a href="/{{slug}}">{{name}}</a></h4>
             <div class="author-social">
                 {{#if facebook}}
                     <a class="author-social-item author-facebook" href="https://www.facebook.com/{{facebook}}" target="_blank" rel="noopener noreferrer">
-                        {{> "icons/facebook"}}
+                        {{> partials/icons/facebook}}
                     </a>
                 {{/if}}
                 {{#if twitter}}
                     <a class="author-social-item author-twitter" href="https://twitter.com/{{twitter}}" target="_blank" rel="noopener noreferrer">
-                        {{> "icons/twitter"}}
+                        {{> partials/icons/twitter}}
                     </a>
                 {{/if}}
             </div>

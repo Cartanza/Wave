@@ -1,20 +1,21 @@
-{{!< default}}
-
+{{#*inline "body"}}
 <div class="gh-outer">
 <main class="site-main gh-inner">
 
-    {{#tag}}
+    {{#with tag}}
         <section class="term">
             <h1 class="term-name">{{name}}</h1>
             <div class="term-description">{{description}}</div>
         </section>
-    {{/tag}}
+    {{/with}}
 
     <div class="post-feed gh-feed">
         {{#foreach posts}}
-            {{> "loop"}}
+            {{> partials/loop}}
         {{/foreach}}
     </div>
 
 </main>
 </div>
+{{/inline}}
+{{> default}}

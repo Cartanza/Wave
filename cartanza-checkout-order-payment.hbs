@@ -1,8 +1,7 @@
-{{!< cartanza-checkout}}
-
+{{#*inline "body"}}
 <div class="main">
 
-    <h1 class="store_title">{{ @site.title }}</h1>
+    <h1 class="store_title">{{ @root.site.title }}</h1>
 
     <div class="section">
         <strong class="inline">Order status:</strong>
@@ -57,7 +56,7 @@
             <script type="text/javascript">
                 // Set your publishable key: remember to change this to your live secret key in production
                 // See your keys here: https://dashboard.stripe.com/account/apikeys
-                var stripe = Stripe('{{ @site.stripe_connect_publishable_key }}', {stripeAccount: '{{ @site.stripe_connect_account_id }}'});
+                var stripe = Stripe('{{ @root.site.stripe_publishable_key }}');
                 var elements = stripe.elements();
                 
                 function loadDoc() {
@@ -155,7 +154,7 @@
         </div>
         <div class="section">
             <div class="div_backward">
-                <span id="confirm_message">Click the "Confirm" button to confirm</span><br/>
+                <span id="confirm_message">Click the "Confirm payment" button to confirm</span><br/>
             </div>
             <div class="div_forward">
                 <button name="button" id="continue_button" class="continue_button" onclick="confirmCardPayment(this, '{{ order.stripe_client_secret }}');return false;"><span>Confirm payment</span></button>
@@ -178,7 +177,7 @@
 {{/if}}
 
     <footer class="main_footer" role="contentinfo">
-        <p class="copyright_text">All rights reserved | {{ @site.title }}</p>
+        <p class="copyright_text">All rights reserved | {{ @root.site.title }}</p>
     </footer>
 </div>
 <div id="spinner" class="spinner">
@@ -186,7 +185,7 @@
 </div>
 <aside class="sidebar" role="complementary">
 <div class="">
-    {{#if (gt order.items.length 0)}}
+    {{#if (gt (length order.items) 0)}}
     <table style="width: 90%;">
         {{#foreach order.items as |item index|}}
         <tr>
@@ -209,15 +208,15 @@
                 </span>
             </td>
             <td class="product_description"><span></span></td>
-            <td class="product_description" align="right"><span>{{ item.quantity }} x {{ formatPrice item.final_price 'USD'}}</span></td>
+            <td class="product_description" align="right"><span>{{ item.quantity }} x {{ formatPrice item.final_price @root.order.currency.iso_code}}</span></td>
         </tr>
-        {{#if (gt ../order.discount_applications.length 0)}}
+        {{#if (gt (length ../order.discount_applications) 0)}}
             {{#foreach ../order.discount_applications as |discount_application index|}}
             {{#if (eq discount_application.variants_id item.variants_id)}}
             <tr>
                 <td class="product_description"></td>
                 <td class="product_description"><span>Discount:</span></td>
-                <td class="product_description">{{ discount_application.title }}:&nbsp;-{{ formatPrice discount_application.total_allocated_amount 'USD' }}</td>
+                <td class="product_description">{{ discount_application.title }}:&nbsp;-{{ formatPrice discount_application.total_allocated_amount @root.order.currency.iso_code }}</td>
                 <td class="product_description"></td>
             </tr>
             {{/if}}
@@ -234,16 +233,16 @@
             <td class="product_description"><span>Sub total</span></td>
             <td class="product_description"></td>
             <td class="product_description"></td>
-            <td class="product_description" align="right"><span>{{ formatPrice order.subtotal_price 'USD'}}</span></td>
+            <td class="product_description" align="right"><span>{{ formatPrice order.subtotal_price @root.order.currency.iso_code}}</span></td>
         </tr>
         {{#foreach order.discount_applications}}
             <tr>
             <td class="product_description"><span>Discount: {{ title }}</span></td>
             <td class="product_description"></td>
-            <td class="product_description" align="right"><span>Savings: -{{ formatPrice total_allocated_amount 'USD'}}</span></td>
+            <td class="product_description" align="right"><span>Savings: -{{ formatPrice total_allocated_amount @root.order.currency.iso_code}}</span></td>
             <td class="product_description" align="right">
             {{#if (eq target_selection "all")}}
-                <span>-{{ formatPrice total_allocated_amount 'USD'}}
+                <span>-{{ formatPrice total_allocated_amount @root.order.currency.iso_code}}
             {{/if}}
             </td>
             </tr>
@@ -251,7 +250,7 @@
         <tr>
             <td class="product_description"><span>Total discounts</span></td>
             <td class="product_description"></td>
-            <td class="product_description" align="right"><span>Your total savings: -{{ formatPrice order.total_discount 'USD'}}</span></td>
+            <td class="product_description" align="right"><span>Your total savings: -{{ formatPrice order.total_discount @root.order.currency.iso_code}}</span></td>
             <td class="product_description"></td>
         </tr>
         </tr>
@@ -259,23 +258,25 @@
             <td class="product_description"><span>Shipping</span></td>
             <td class="product_description"></td>
             <td class="product_description"></td>
-            <td class="product_description" align="right"><span>{{ formatPrice order.shipping_price 'USD'}}</span></td>
+            <td class="product_description" align="right"><span>{{ formatPrice order.shipping_price @root.order.currency.iso_code}}</span></td>
         </tr>
         {{#foreach order.tax_lines}}
         <tr>
             <td class="product_description"><span>{{ title }}</span></td>
             <td class="product_description"></td>
             <td class="product_description"></td>
-            <td class="product_description" align="right"><span>{{ formatPrice price 'USD'}}</span></td>
+            <td class="product_description" align="right"><span>{{ formatPrice price @root.order.currency.iso_code}}</span></td>
         </tr>
         {{/foreach}}
         <tr>
             <td class="total_description"><span>Total</span></td>
             <td class="product_description"></td>
             <td class="total_description"></td>
-            <td class="total_description" align="right"><span style="font-size: 1.7em;">{{ formatPrice order.total_price 'USD'}}</span></td>
+            <td class="total_description" align="right"><span style="font-size: 1.7em;">{{ formatPrice order.total_price @root.order.currency.iso_code}}</span></td>
         </tr>
     </table>    
     {{/if}}
 </div>
 </aside>
+{{/inline}}
+{{> cartanza-checkout}}

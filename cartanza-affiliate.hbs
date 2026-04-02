@@ -1,5 +1,4 @@
-{{!< default}}
-
+{{#*inline "body"}}
 <style>
 .cart-items {
     display: table;
@@ -255,8 +254,8 @@
                 <p><strong>Total # of clicks:</strong> {{affiliate.total_clicks}}</p>
                 <p><strong>Total # of conversions:</strong> {{affiliate.total_conversions}}</p>
                 <p><strong>Total # of payouts:</strong> {{affiliate.total_payouts}}</p>
-                <p><strong>Total earned:</strong> {{formatPrice affiliate.total_commissions 'USD'}}</p>
-                <p><strong>Total paid:</strong> {{formatPrice affiliate.total_paid 'USD'}}</p>
+                <p><strong>Total earned:</strong> {{formatPrice affiliate.total_commissions @root.site.commerce_currency}}</p>
+                <p><strong>Total paid:</strong> {{formatPrice affiliate.total_paid @root.site.commerce_currency}}</p>
               </div>
             </div>
           </section>
@@ -277,7 +276,7 @@
                     <div class="cart-item">
                         <div class="product-title">{{index}}</div>
                         <div class="product-variant">{{payout.payment_method}}</div>
-                        <div class="price"> {{formatPrice payout.amount 'USD'}}</div>
+                        <div class="price"> {{formatPrice payout.amount @root.site.commerce_currency}}</div>
                         <div class="total">{{payout.status}}</div>
                         <div class="total">{{payout.notes}}</div>
                         <div class="total">{{ date payout.created_at format="YYYY-MM-DD" }}</div>
@@ -357,6 +356,8 @@
   }
   function viewPlans(event) {
     event.preventDefault();
-    window.location.href = '/account/#/portal/account/plans/';
+    window.location.href = '/account#/portal/account/plans/';
   }
 </script>
+{{/inline}}
+{{> default}}

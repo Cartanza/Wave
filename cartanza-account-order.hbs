@@ -1,5 +1,4 @@
-{{!< default}}
-
+{{#*inline "body"}}
 <style>
 .table-bordered {
     border: 1px solid #e9ecef;
@@ -83,42 +82,42 @@
                   {{/if}}
                 </td>
                 <td class="text-center">{{ item.sku }}</td>
-                <td class="text-center">{{ formatPrice item.final_price 'USD' }}</td>
+                <td class="text-center">{{ formatPrice item.final_price @root.order.currency.iso_code }}</td>
                 <td class="text-center">{{ item.quantity }}</td>
-                <td class="text-center">{{ formatPrice item.total_price 'USD' }}</td>
+                <td class="text-center">{{ formatPrice item.total_price @root.order.currency.iso_code }}</td>
               </tr>
               {{/foreach}}
             </tbody>
             <tfoot>
               <tr>
                 <td colspan="4">Subtotal:</td>
-                <td class="text-center">{{ formatPrice order.subtotal_price 'USD' }}</td>
+                <td class="text-center">{{ formatPrice order.subtotal_price @root.order.currency.iso_code }}</td>
               </tr>
 
               {{#foreach order.discount_applications as |discount| }}
               <tr class="order_summary discount">
                 <td colspan="4">{{ discount.title }}:</td>
-                <td class="text-center">-{{ formatPrice discount.total_allocated_amount 'USD' }}</td>
+                <td class="text-center">-{{ formatPrice discount.total_allocated_amount @root.order.currency.iso_code }}</td>
               </tr>
               {{/foreach}}
 
               {{#foreach order.shipping_methods as |shipping_method| }}
               <tr>
                 <td colspan="4">Shipping: ({{ shipping_method.title }}):</td>
-                <td class="text-center">{{ formatPrice shipping_method.price 'USD' }}</td>
+                <td class="text-center">{{ formatPrice shipping_method.price @root.order.currency.iso_code }}</td>
               </tr>
               {{/foreach}}
 
               {{#foreach order.tax_lines as |tax_line| }}
               <tr>
-                <td colspan="4">Tax: ({{ tax_line.title }} {{ formatPrice tax_line.rate 'USD' }}%):</td>
-                <td class="text-center">{{ formatPrice tax_line.price 'USD' }}</td>
+                <td colspan="4">Tax: ({{ tax_line.title }} {{ tax_line.rate }}%):</td>
+                <td class="text-center">{{ formatPrice tax_line.price @root.order.currency.iso_code }}</td>
               </tr>
               {{/foreach}}
 
               <tr>
                 <td colspan="4"><strong>Total:</strong></td>
-                <td class="text-center"><strong>{{ formatPrice order.total_price 'USD' }} {{ order.currency.iso_code }}</strong></td>
+                <td class="text-center"><strong>{{ formatPrice order.total_price @root.order.currency.iso_code }}</strong></td>
               </tr>
             </tfoot>
           </table>
@@ -186,3 +185,5 @@
     </div>
   </div>
 </div>
+{{/inline}}
+{{> default}}

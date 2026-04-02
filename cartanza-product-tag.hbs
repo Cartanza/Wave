@@ -1,5 +1,4 @@
-{{!< default}}
-
+{{#*inline "body"}}
 {{!-- The tag above means: insert everything in this file
 into the {body} tag of the default.hbs template --}}
 
@@ -33,4 +32,5 @@ into the {body} tag of the default.hbs template --}}
     </div>
     {{/foreach}}
     </div>
-
+{{/inline}}
+{{> default}}

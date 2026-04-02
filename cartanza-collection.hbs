@@ -1,11 +1,10 @@
-{{!< default}}
-
+{{#*inline "body"}}
 {{!-- The tag above means: insert everything in this file
 into the {body} tag of the default.hbs template --}}
 
 
 
-{{#cartanzacollection}}
+{{#with cartanzacollection}}
     
     <section class="article-header gh-canvas" data-animate="fade" style="margin-bottom: 30px;">
         <div class="" style="position: relative;text-align: center;z-index: 2;">
@@ -35,5 +34,6 @@ into the {body} tag of the default.hbs template --}}
     </div>
     {{/foreach}}
     </div>
-{{/cartanzacollection}}
-
+{{/with}}
+{{/inline}}
+{{> default}}

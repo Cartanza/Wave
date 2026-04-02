@@ -1,13 +1,12 @@
-{{!< default}}
-
+{{#*inline "body"}}
 {{!-- The tag above means: insert everything in this file
 into the {body} tag of the default.hbs template --}}
 
-{{#cartanza_product}}
+{{#with cartanza_product}}
     <div class="cartanza-product-container" style="display:flex;justify-content: space-between;margin: auto;margin-top: 10%;max-width: var(--container-width);width: 100%;">
         <div class="cartanza-product-image-container" style="display:flex;width:50%;">
             <div class="cartanza-product-image-picker-container" style="width:25%;">
-            <ul class="" role="" style="list-style-type: none;" id="product-image-picker">
+            <ul class="" role="" style="list-style-type: none;margin-top:0;" id="product-image-picker">
             {{#foreach images}}
                 <li class="" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}margin-bottom: 5px;">
                     <img class="" src="/content/images/products/{{src}}" alt="{{alt}}" style="width: 100%;">
@@ -25,7 +24,7 @@ into the {body} tag of the default.hbs template --}}
                 <a href="/products/{{slug}}">{{ title }}</a>
             </h4>
             <span id="" class="">
-                <span class=""><span class="money">{{formatPrice variants.[0].price 'USD'}}</span></span>
+                <span class=""><span class="money">{{formatPrice variants.[0].price site.commerce_currency}}</span></span>
             </span>
             <p>{{{description}}}</p>
             {{#if event}}
@@ -60,15 +59,15 @@ into the {body} tag of the default.hbs template --}}
                         {{/if}}
                     </p>
                     <p>
-                        Starts: {{ date starts_at format="MMMM D, YYYY \a\t h:mm A" }}<br/>
-                        Ends: {{ date ends_at format="MMMM D, YYYY \a\t h:mm A" }}<br/>
+                        Starts: {{ date starts_at format="MMMM D, YYYY at h:mm A" }}<br/>
+                        Ends: {{ date ends_at format="MMMM D, YYYY at h:mm A" }}<br/>
                     </p>
                 {{/foreach}}
             {{/if}}
         </div>
     </div>
     <div id="cartanzaformdiv" data-form-code="{{ slug }}"/>
-{{/cartanza_product}}
+{{/with}}
 
 
 
@@ -77,3 +76,5 @@ document.addEventListener('DOMContentLoaded', function() {
     registerProductImagePicker('product-image-picker','product-image-target');
 });
 </script>
+{{/inline}}
+{{> default}}
