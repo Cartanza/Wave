@@ -1,169 +1,91 @@
 <!DOCTYPE html>
 <html lang="{{@root.site.locale}}">
-
 <head>
+
+    {{!-- Basic meta - advanced meta is output with {{ghost_head}} below --}}
+    <title>{{meta_title}}</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{#is "blog"}}
-        <title>{{meta_title}}</title>
-    {{else}}
-        <title>{{block "title"}}</title>
-        {{{block "description"}}}
-    {{/is}}
-    <link rel="stylesheet" href="{{asset "built/screen.css"}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{!-- Preload main styles and scripts for better performance --}}
+    <link rel="preload" as="style" href="{{asset "built/screen.css"}}">
+    <link rel="preload" as="script" href="{{asset "built/source.js"}}">
+    
+    {{!-- Fonts are preloaded and defined in the default template to avoid layout shift --}}
+    {{> partials/typography/fonts}}
+
+    {{!-- Theme assets - use the {{asset}} helper to reference styles & scripts, this will take care of caching and cache-busting automatically --}}
+    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
     <link rel="stylesheet" href="{{asset "css/font-awesome.min.css"}}">
 
+    {{!-- Custom background color --}}
+    <style>
+        :root {
+            --background-color: {{@root.custom.site_background_color}}
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    {{!-- This tag outputs all your advanced SEO meta, structured data, and other important settings, it should always be the last tag before the closing head tag --}}
+    {{ghost_head}}
+
     <script
-        src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
         crossorigin="anonymous">
     </script>
-    <script src="{{asset "built/main.min.js"}}"></script>
-    {{ghost_head}}
 </head>
+<body class="{{body_class}} has-{{#match @root.custom.title_font "Elegant serif"}}serif{{else match @root.custom.title_font "Consistent mono"}}mono{{else}}sans{{/match}}-title has-{{#match @root.custom.body_font "Elegant serif"}}serif{{else}}sans{{/match}}-body">
 
-<body class="{{body_class}}{{{block "body_class"}}} is-head-{{#match @root.custom.navigation_layout "Logo on the left"}}left-logo{{else match @root.custom.navigation_layout "Logo in the middle"}}middle-logo{{else}}stacked{{/match}}{{#match @root.custom.title_font "=" "Elegant serif"}} has-serif-title{{/match}}{{#match @root.custom.body_font "=" "Elegant serif"}} has-serif-body{{/match}}">
-<div class="site">
+<div class="gh-viewport">
+    
+    {{> partials/components/navigation navigationLayout=@root.custom.navigation_layout}}
 
-    <header id="gh-head" class="gh-head gh-outer">
-        <div class="gh-head-inner gh-inner">
-            <div class="gh-head-brand">
-                <div class="gh-head-brand-wrapper">
-                    <a class="gh-head-logo" href="{{@root.site.url}}">
-                        {{#if @root.site.logo}}
-                            <img src="{{@root.site.logo}}" alt="{{@root.site.title}}">
-                        {{else}}
-                            {{@root.site.title}}
-                        {{/if}}
-                    </a>
-                </div>
-                <button class="gh-search gh-icon-btn" aria-label="Search this site" data-ghost-search>{{> partials/icons/search}}</button>
-                <button class="gh-burger"></button>
-            </div>
-
-            <nav class="gh-head-menu">
-                {{navigation}}
-                {{#unless @root.site.members_enabled}}
-                    {{#match @root.custom.navigation_layout "Stacked"}}
-                        <button class="gh-search gh-icon-btn" aria-label="Search this site" data-ghost-search>{{> partials/icons/search}}</button>
-                    {{/match}}
-                {{/unless}}
-            </nav>
-
-            <div class="gh-head-actions">
-                {{#unless @root.site.members_enabled}}
-                    {{#match @root.custom.navigation_layout "!=" "Stacked"}}
-                        <button class="gh-search gh-icon-btn" aria-label="Search this site" data-ghost-search>{{> partials/icons/search}}</button>
-                    {{/match}}
-                {{else}}
-                    <button class="gh-search gh-icon-btn" aria-label="Search this site" data-ghost-search>{{> partials/icons/search}}</button>
-                    <div class="gh-head-members">
-                        {{#unless @root.member}}
-                            {{#unless @root.site.members_invite_only}}
-                                <a class="gh-head-link" href="/#/portal/signin" data-portal="signin">Sign in</a>
-                                <a class="gh-head-button" href="/#/portal/signup" data-portal="signup">Subscribe</a>
-                            {{else}}
-                                <a class="gh-head-button" href="/#/portal/signin" data-portal="signin">Sign in</a>
-                            {{/unless}}
-                        {{else}}
-                            <a class="gh-head-button" href="/account">Account</a>
-                        {{/unless}}
-                        {{#if @root.site.commerce_enabled}}
-                        <div class="cartanza-cart-container">
-                            <i class="fs-12 fa fa-shopping-bag" aria-hidden="true" style="color:#666666;font-size: 2em;margin-top: 15px;"></i>
-                            <span class="header-icons-noti cartanza-cart-total" style="display: -webkit-box;display: -webkit-flex;display: -moz-box;display: -ms-flexbox;display: flex;justify-content: center;align-items: center;width: 20px;height: 20px;border-radius: 50%;background-color: #111111;color: white;font-size: 12px;position: relative;top: -30px;right: -20px;" >0</span>
-                            <div class="cartanza-header-cart">
-                                <ul class="header-cart-wrapitem" style="max-height: 270px;overflow: auto;">
-                                    <li class="header-cart-item" style="text-align: center;">
-                                        <span class="header-cart-item-info" style="color: black;">Empty Cart</span>
-                                    </li>
-                                </ul>
-                                <div class="header-cart-total" style="font-size: 15px;color: #555555;line-height: 1.3;text-align: right;padding-top: 15px;padding-bottom: 25px;padding-right: 3px;">
-                                    Subtotal : $0.00
-                                </div>
-                                <div class="header-cart-buttons" style="    display: -webkit-box;display: -webkit-flex;display: -moz-box;display: -ms-flexbox;display: flex;flex-wrap: wrap;justify-content: space-between;align-items: center;">
-                                    <div class="header-cart-wrapbtn" style="width: calc((100% - 10px) / 2);padding: 0px;box-sizing: border-box;">
-                                    <!-- Button -->
-                                    <a href="/cart" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4" style="border-radius:20px;background-color:#222222;align-items: center;color: white;text-transform:uppercase;padding:12px 20px;">
-                                        View Cart
-                                    </a>
-                                    </div>
-                                    <div class="header-cart-wrapbtn" style="width: calc((100% - 10px) / 2);padding: 0px;box-sizing: border-box;">
-                                    <!-- Button -->
-                                    <a href="/checkout" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4" style="border-radius:20px;background-color:#222222;align-items: center;color: white;text-transform:uppercase;padding:12px 20px;">
-                                        Checkout
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        {{/if}}
-                {{/unless}}
-            </div>
-        </div>
-    </header>
-
-    {{#is "home"}}
-    {{#if @root.site.cover_image}}
-        <div class="site-cover u-overlay">
-            <img class="cover-image u-object-fit" src="{{img_url @root.site.cover_image}}" alt="{{@root.site.title}}">
-            <div class="cover-content">
-                {{#if @root.site.logo}}
-                    <img class="cover-logo" src="{{@root.site.logo}}" alt="{{@root.site.title}}">
-                {{/if}}
-                {{#if @root.site.description}}
-                    <div class="cover-description">{{@root.site.description}}</div>
-                {{/if}}
-            </div>
-        </div>
-    {{/if}}
-    {{/is}}
-
-    <div class="site-content">
-        {{~> body}}
-    </div>
-
-    <footer class="gh-foot gh-outer">
-        <div class="gh-foot-inner gh-inner">
-            <div class="subscribe{{#if is_popup}} popup{{/if}}">
-                {{#if @root.custom.apple_podcasts_link}}
-                    <a href="{{@root.custom.apple_podcasts_link}}" class="subscribe-link" target="_blank" rel="noopener noreferrer">
-                        {{> partials/icons/apple}}
-                        <span class="subscribe-text">Apple</span>
-                    </a>
-                {{/if}}
-                {{#if @root.custom.google_podcasts_link}}
-                    <a href="{{@root.custom.google_podcasts_link}}" class="subscribe-link" target="_blank" rel="noopener noreferrer">
-                        {{> partials/icons/google}}
-                        <span class="subscribe-text">Google</span>
-                    </a>
-                {{/if}}
-                {{#if @root.custom.spotify_link}}
-                    <a href="{{@root.custom.spotify_link}}" class="subscribe-link" target="_blank" rel="noopener noreferrer">
-                        {{> partials/icons/spotify}}
-                        <span class="subscribe-text">Spotify</span>
-                    </a>
-                {{/if}}
-                <a href="{{#if @root.custom.rss_link}}{{@root.custom.rss_link}}{{else}}{{@root.site.url}}/rss{{/if}}" class="subscribe-link rss" target="_blank" rel="noopener noreferrer">
-                    {{> partials/icons/rss}}
-                    <span class="subscribe-text">RSS</span>
-                </a>
-            </div>
-            <nav class="gh-foot-menu">
-                {{navigation type="secondary"}}
-            </nav>
-            <div class="gh-copyright">
-                {{@root.site.title}} © {{date format="YYYY"}}. <a href="https://cartanza.com/" target="_blank" rel="noopener">Powered by Cartanza</a>
-            </div>
-        </div>
-    </footer>
-
-    {{#is "post, page"}}
-        {{> partials/player}}
-    {{/is}}
-
+    {{~> body}}
+    
+    {{> partials/components/footer}}
+    
 </div>
 
-{{{block "scripts"}}}
+{{#is "post, page"}}
+    {{> partials/lightbox}}
+{{/is}}
+
+{{!-- Scripts - handle responsive videos, infinite scroll, and navigation dropdowns --}}
+<script src="{{asset "built/source.js"}}"></script>
+
+<style>
+    .cartanza-cart-container {
+        position: relative;
+    }
+    .cartanza-header-cart {
+        right: 0 !important;
+        top: 100% !important;
+    }
+    @media (max-width: 767px) {
+        .cartanza-header-cart {
+            display: none !important;
+        }
+    }
+</style>
 
 <script>
     // Select the cart icon and header cart elements
@@ -173,7 +95,11 @@
 
         document.addEventListener('click', (event) => {
             if (cartIcon.contains(event.target)) {
-                headerCart.classList.toggle('show-header-dropdown');
+                if (window.innerWidth < 768) {
+                    window.location.href = '/cart';
+                } else {
+                    headerCart.classList.toggle('show-header-dropdown');
+                }
             } else if (!headerCart.contains(event.target)) {
                 headerCart.classList.remove('show-header-dropdown');
             }
@@ -226,6 +152,7 @@
         }
     }
 </script>
+{{!-- Ghost outputs required functional scripts with this tag, it should always be the last thing before the closing body tag --}}
 {{ghost_foot}}
 
 </body>

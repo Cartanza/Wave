@@ -9,14 +9,14 @@ into the {body} tag of the default.hbs template --}}
             <ul class="" role="" style="list-style-type: none;margin-top:0;" id="product-image-picker">
             {{#foreach images}}
                 <li class="" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}margin-bottom: 5px;">
-                    <img class="" src="/content/images/products/{{src}}" alt="{{alt}}" style="width: 100%;">
+                    <img class="" src="{{product_image_url src}}" alt="{{alt}}" style="width: 100%;">
                     <div class=""></div>
                 </li>
             {{/foreach}}
             </ul>
             </div>
             <div class="cartanza-product-image-container" style="width:80%;">
-                <img class="" src="/content/images/products/{{img_url images.[0].src}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
+                <img class="" src="{{product_image_url (img_url images.[0].src)}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
             </div>
         </div>
         <div class="cartanza-product-description-container" style="padding:20px;width:50%;">

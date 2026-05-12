@@ -75,9 +75,18 @@
                         +&nbsp;{{variant.optionthreevalue.value}}
                     {{/if}}
                   </a>
-                  {{#if item.fulfillment }}
+                  {{#if item.fullfillment }}
                   <div class="note">
-                    Fulfillment: {{ item.fulfillment }}
+                    Fulfillment: {{ item.fullfillment }}
+                  </div>
+                  {{/if}}
+                  {{#if item.pod_tracking_number }}
+                  <div class="tracking-info" style="margin-top: 5px; padding: 5px; background: #f8f9fa; border-radius: 4px; font-size: 0.85em; border: 1px solid #eee;">
+                    <strong>{{ item.pod_tracking_carrier }}:</strong> 
+                    <a href="javascript:void(0)" style="word-break: break-all;">{{ item.pod_tracking_number }}</a>
+                    {{#if item.pod_line_item_status}}
+                      <div style="margin-top: 2px; color: #666;">Status: {{ item.pod_line_item_status }}</div>
+                    {{/if}}
                   </div>
                   {{/if}}
                 </td>
@@ -155,6 +164,9 @@
                 <h3>Shipping Address:</h3>
 
                 <p><strong>Fulfillment Status:</strong> {{ order.fulfillment_status }}</p>
+                {{#if order.pod_status}}
+                <p><strong>POD Status:</strong> <span class="badge badge-info" style="background: #17a2b8; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; text-transform: uppercase;">{{ order.pod_status }}</span></p>
+                {{/if}}
 
                 <h5>{{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}</h5>
                 <p>

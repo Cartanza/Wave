@@ -36,8 +36,13 @@
     }
 
     .cart-item img {
-        width: 80px;
-        height: auto;
+        width: 4em;
+        height: 4em;
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+        border: 1px transparent solid;
+        border-color: #d9d9d9;
     }
 
     .product-details {
@@ -152,7 +157,7 @@
         <div class="cart-items">
             {{#foreach items}}
             <div class="cart-item">
-                <img src="/content/images/products/{{variant.image_src}}" alt="{{product.title}}" title="{{product.title}}">
+                <img src="{{product_image_url variant.image_src}}" alt="{{product.title}}" title="{{product.title}}">
                 <div class="product-details">
                     <a href="/products/{{product.slug}}">
                         <div class="product-title">{{product.title}}</div>

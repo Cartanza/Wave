@@ -24,6 +24,23 @@ function registerProductImagePicker(productImagePickerName, productImageTargetNa
         // Set border on selected li element
         const selectedLi = event.target.parentNode;
         selectedLi.style.border = '3px solid #888888';
+
+        // Attempt to select corresponding variant if image matches
+        const variantSelector = document.getElementById('variant-selector');
+        if (variantSelector) {
+            for (let i = 0; i < variantSelector.options.length; i++) {
+                const option = variantSelector.options[i];
+                const optionImage = option.getAttribute('data-image');
+                if (optionImage) {
+                    const tempImg = new Image();
+                    tempImg.src = optionImage;
+                    if (tempImg.src === selectedImageSrc) {
+                        variantSelector.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
     }
     });
 }
@@ -31,6 +48,20 @@ function registerProductImagePicker(productImagePickerName, productImageTargetNa
 function registerAddToCartButton(buttonID) {
     const addToCartButton = document.getElementById(buttonID);
     addToCartButton.addEventListener('click', addToCart);
+}
+
+function registerVariantSelector(selectorId, targetImageId) {
+    const selector = document.getElementById(selectorId);
+    const targetImage = document.getElementById(targetImageId);
+    if (!selector || !targetImage) return;
+
+    selector.addEventListener('change', () => {
+        const selectedOption = selector.options[selector.selectedIndex];
+        const imageUrl = selectedOption.getAttribute('data-image');
+        if (imageUrl && imageUrl.trim() !== '') {
+            targetImage.src = imageUrl;
+        }
+    });
 }
 
 function registerQuantityButton(buttonMinus, buttonPlus, input) {
@@ -75,11 +106,14 @@ async function getCart() {
         cartContainer.innerHTML = '';
         cartData.items.forEach((item) => {
             const price = (item.unit_price / 100).toFixed(2);
+            const imageSrc = (item.variant.image_src && (item.variant.image_src.startsWith('http') || item.variant.image_src.startsWith('//'))) 
+                ? item.variant.image_src 
+                : '/content/images/products/' + item.variant.image_src;
             const itemHtml = 
             '<li class="header-cart-item" style="display: -webkit-box;display: -webkit-flex;display: -moz-box;display: -ms-flexbox;display: flex;flex-wrap: wrap;align-items: center;padding-bottom: 5px;padding-top: 5px;">' +
                 '<div class="header-cart-item-img" style="width: 80px;position: relative;margin-right: 20px;">' +
                 '<a href="/products/' + item.product.slug +'">' +
-                    '<img src="/content/images/products/' + item.variant.image_src + '" alt="' + item.product.title + '" title="' + item.product.title + '">' +
+                    '<img src="' + imageSrc + '" alt="' + item.product.title + '" title="' + item.product.title + '">' +
                 '</a>' +
                 '</div>' +
                 '<div class="header-cart-item-txt" style="width: calc(100% - 100px);text-align: left;">' +
@@ -261,7 +295,7 @@ function renderForm(container, form, formCode) {
                 fieldWrapper.setAttribute('data-required', 'true');
             }
             const label = document.createElement('label');
-            label.textContent = field.title;
+            label.textContent = field.title + ':';
             label.className = 'gh-portal-input-label';
             fieldWrapper.appendChild(label);
 

@@ -9,14 +9,14 @@ into the {body} tag of the default.hbs template --}}
             <ul class="" role="" style="list-style-type: none;margin-top:0;" id="product-image-picker">
             {{#foreach images}}
                 <li class="" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}margin-bottom: 5px;">
-                    <img class="" src="/content/images/products/{{src}}" alt="{{alt}}" style="width: 100%;">
+                    <img class="" src="{{product_image_url src}}" alt="{{alt}}" style="width: 100%;">
                     <div class=""></div>
                 </li>
             {{/foreach}}
             </ul>
             </div>
             <div class="cartanza-product-image-container" style="width:80%;">
-                <img class="" src="/content/images/products/{{img_url images.[0].src}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
+                <img class="" src="{{product_image_url (img_url images.[0].src)}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
             </div>
         </div>
         <div class="cartanza-product-description-container" style="padding:20px;width:50%;">
@@ -69,7 +69,7 @@ into the {body} tag of the default.hbs template --}}
                     <select name="id" id="variant-selector" class="form-control" style="display: block;width: 100%;padding: .5rem .75rem;color: #495057;border:1px solid rgba(0, 0, 0, .15);border-radius:.25rem;">
                         {{#foreach variants}}
                         {{#if (or (gt inventory_quantity 0) (eq inventory_policy "allow"))}}
-                        <option data-sku="{{ sku }}" value="{{ id }}">
+                        <option data-sku="{{ sku }}" value="{{ id }}" data-image="{{product_image_url image_src}}">
                             {{#if optiononevalue.value}}
                                 {{ optiononevalue.value }}
                             {{else}}
@@ -102,11 +102,8 @@ into the {body} tag of the default.hbs template --}}
                     </select>
                 </div>
                 <div class="cartanza-product-form-button-container">
-                    {{#foreach variants}}
-                        {{#if (or (gt inventory_quantity 0) (eq inventory_policy "allow"))}}
-                            {{#if (eq @index 0) }}
-                            <div class="cartanza-product-quantity-container" style="margin:20px;display:flex;align-items:center;">
-                            <div class="cartanza-product-input-container" style="border:2px solid #e6e6e6;border-radius: 3px;">
+                    <div class="cartanza-product-quantity-container" style="margin:20px;display:flex;align-items:center;">
+                        <div class="cartanza-product-input-container" style="border:2px solid #e6e6e6;border-radius: 3px;">
                             <button type="button" class="" id="button-minus" style="width:42px;height:44px;">
                                 <i class="fs-12 fa fa-minus" aria-hidden="true" style="color:#666666;"></i>
                             </button>
@@ -114,14 +111,11 @@ into the {body} tag of the default.hbs template --}}
                             <button type="button" class="" id="button-plus" style="width:42px;height:44px;">
                                 <i class="fs-12 fa fa-plus" aria-hidden="true" style="color:#666666;"></i>
                             </button>
-                            </div>
-                            <div class="cartanza-product-add-to-cart-button-container" style="margin: 20px;">
-                                <button class="cartanza-product-add-to-cart-button" type="button" name="add" id="button-cart" style="border-radius:20px;background-color:#222222;align-items: center;color: white;text-transform:uppercase;padding:12px 20px;">ADD TO CART</button>
-                            </div>
-                            </div>
-                            {{/if}}
-                        {{/if}}
-                    {{/foreach}}
+                        </div>
+                        <div class="cartanza-product-add-to-cart-button-container" style="margin: 20px;">
+                            <button class="cartanza-product-add-to-cart-button" type="button" name="add" id="button-cart" style="border-radius:20px;background-color:#222222;align-items: center;color: white;text-transform:uppercase;padding:12px 20px;">ADD TO CART</button>
+                        </div>
+                    </div>
                 </div>
                 </form>
             </div>
@@ -131,6 +125,7 @@ into the {body} tag of the default.hbs template --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     registerProductImagePicker('product-image-picker','product-image-target');
+    registerVariantSelector('variant-selector', 'product-image-target');
     registerQuantityButton('button-minus','button-plus', 'input-quantity');
     registerAddToCartButton('button-cart');
 });
