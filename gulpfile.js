@@ -67,7 +67,7 @@ function getJsFiles(version) {
 
 function js(done) {
     pump([
-        order(getJsFiles('v1'), {sourcemaps: true}),
+        order(getJsFiles('v2'), {sourcemaps: true}),
         concat('main.min.js'),
         uglify(),
         dest('assets/built/', {sourcemaps: '.'}),
