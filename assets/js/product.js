@@ -113,7 +113,7 @@ async function getCart() {
             '<li class="header-cart-item" style="display: -webkit-box;display: -webkit-flex;display: -moz-box;display: -ms-flexbox;display: flex;flex-wrap: wrap;align-items: center;padding-bottom: 5px;padding-top: 5px;">' +
                 '<div class="header-cart-item-img" style="width: 80px;position: relative;margin-right: 20px;">' +
                 '<a href="/products/' + item.product.slug +'">' +
-                    '<img src="' + imageSrc + '" alt="' + item.product.title + '" title="' + item.product.title + '">' +
+                    '<img src="' + imageSrc + '" alt="' + item.product.title + '" title="' + item.product.title + '" style="width: 100%;">' +
                 '</a>' +
                 '</div>' +
                 '<div class="header-cart-item-txt" style="width: calc(100% - 100px);text-align: left;">' +

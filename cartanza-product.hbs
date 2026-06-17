@@ -1,25 +1,125 @@
 {{#*inline "body"}}
+<style>
+.cartanza-product-container {
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    margin-top: 10%;
+    max-width: var(--container-width, 1200px);
+    width: 100%;
+}
+.cartanza-product-image-gallery {
+    display: flex;
+    width: 50%;
+}
+.cartanza-product-image-picker-container {
+    width: 25%;
+    margin-right: 15px;
+}
+.cartanza-product-image-picker-container ul {
+    list-style-type: none;
+    margin-top: 0;
+    padding-left: 0;
+    max-height: 550px;
+    overflow-y: auto;
+}
+.cartanza-product-image-picker-container ul::-webkit-scrollbar {
+    width: 4px;
+}
+.cartanza-product-image-picker-container ul::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+.cartanza-product-thumbnail {
+    margin-bottom: 5px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    margin-top: 0;
+}
+.cartanza-product-thumbnail img {
+    width: 100%;
+    display: block;
+}
+.cartanza-product-image-target-container {
+    width: 75%;
+}
+.cartanza-product-image-target-container img {
+    width: 100%;
+    display: block;
+}
+.cartanza-product-description-container {
+    padding: 20px;
+    width: 50%;
+}
+
+@media (max-width: 767px) {
+    .cartanza-product-container {
+        flex-direction: column;
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+    .cartanza-product-image-gallery {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+    .cartanza-product-image-picker-container {
+        width: 100%;
+        margin-right: 0;
+        margin-top: 10px;
+    }
+    .cartanza-product-image-picker-container ul {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        max-height: none;
+        padding-bottom: 5px;
+    }
+    .cartanza-product-thumbnail {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        margin-bottom: 0;
+        margin-right: 8px;
+        flex-shrink: 0;
+        margin-top: 0;
+    }
+    .cartanza-product-thumbnail img {
+        height: 100%;
+        object-fit: cover;
+    }
+    .cartanza-product-image-target-container {
+        width: 100%;
+    }
+    .cartanza-product-description-container {
+        width: 100%;
+        padding: 15px 0;
+    }
+}
+</style>
+
 {{!-- The tag above means: insert everything in this file
 into the {body} tag of the default.hbs template --}}
 
 {{#with cartanza_product}}
-    <div class="cartanza-product-container" style="display:flex;justify-content: space-between;margin: auto;margin-top: 10%;max-width: var(--container-width);width: 100%;">
-        <div class="cartanza-product-image-container" style="display:flex;width:50%;">
-            <div class="cartanza-product-image-picker-container" style="width:25%;">
-            <ul class="" role="" style="list-style-type: none;margin-top:0;" id="product-image-picker">
+    <div class="cartanza-product-container">
+        <div class="cartanza-product-image-gallery">
+            <div class="cartanza-product-image-picker-container">
+            <ul id="product-image-picker">
             {{#foreach images}}
-                <li class="" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}margin-bottom: 5px;">
-                    <img class="" src="{{product_image_url src}}" alt="{{alt}}" style="width: 100%;">
+                <li class="cartanza-product-thumbnail" role="" style="{{#if (eq @index 0) }}border: 3px solid #888888;{{/if}}">
+                    <img class="" src="{{product_image_url src}}" alt="{{alt}}">
                     <div class=""></div>
                 </li>
             {{/foreach}}
             </ul>
             </div>
-            <div class="cartanza-product-image-container" style="width:80%;">
-                <img class="" src="{{product_image_url (img_url images.[0].src)}}" alt="{{tittle}}" id="product-image-target" style="width: 100%;">
+            <div class="cartanza-product-image-target-container">
+                <img class="" src="{{product_image_url (img_url images.[0].src)}}" alt="{{tittle}}" id="product-image-target">
             </div>
         </div>
-        <div class="cartanza-product-description-container" style="padding:20px;width:50%;">
+        <div class="cartanza-product-description-container">
             <h4 class="">
                 {{ title }}
             </h4>
