@@ -80,6 +80,19 @@
                     Fulfillment: {{ item.fullfillment }}
                   </div>
                   {{/if}}
+                  {{#if item.digital}}
+                    {{#if item.download_url}}
+                      <div class="digital-download" style="margin-top: 5px;">
+                        {{#if (eq item.downloads -1)}}
+                          <a href="{{item.download_url}}" class="gh-btn gh-btn-small" style="background: #15171a; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; text-decoration: none; display: inline-block;">Download Digital Product (Unlimited)</a>
+                        {{else if (gt item.downloads 0)}}
+                          <a href="{{item.download_url}}" class="gh-btn gh-btn-small" style="background: #15171a; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; text-decoration: none; display: inline-block;">Download Digital Product ({{item.downloads}} remaining)</a>
+                        {{else}}
+                          <span style="color: #999; font-size: 0.85em;">Download limit reached</span>
+                        {{/if}}
+                      </div>
+                    {{/if}}
+                  {{/if}}
                   {{#if item.pod_tracking_number }}
                   <div class="tracking-info" style="margin-top: 5px; padding: 5px; background: #f8f9fa; border-radius: 4px; font-size: 0.85em; border: 1px solid #eee;">
                     <strong>{{ item.pod_tracking_carrier }}:</strong> 
