@@ -2,9 +2,7 @@
 {{!-- The tag above means: insert everything in this file
 into the {body} tag of the default.hbs template --}}
 
-
-
-{{#with cartanzacollection}}
+{{#with products}}
 
     <section class="article-header gh-canvas" data-animate="fade" style="margin-bottom: 30px;">
         <div class="" style="position: relative;text-align: center;z-index: 2;">
@@ -49,6 +47,53 @@ into the {body} tag of the default.hbs template --}}
     </div>
     {{/foreach}}
     </div>
+
+    {{#if @root.pagination}}
+    <nav class="cartanza-pagination">
+        {{#if @root.pagination.prev}}
+            <a class="newer-posts" href="{{page_url @root.pagination.prev}}"><span aria-hidden="true">&larr;</span> Previous</a>
+        {{/if}}
+        <span class="page-number">Page {{@root.pagination.page}} of {{@root.pagination.pages}}</span>
+        {{#if @root.pagination.next}}
+            <a class="older-posts" href="{{page_url @root.pagination.next}}">Next <span aria-hidden="true">&rarr;</span></a>
+        {{/if}}
+    </nav>
+    {{/if}}
+
+    <style>
+    .cartanza-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin: 40px auto;
+        max-width: var(--container-width);
+        padding: 0 20px;
+    }
+    .cartanza-pagination a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border: 1px solid var(--color-border, #e1e1e1);
+        border-radius: 6px;
+        color: var(--color-darkgrey, #15171a);
+        font-size: 1.4rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .cartanza-pagination a:hover {
+        border-color: var(--ghost-accent-color, #15171a);
+        color: var(--ghost-accent-color, #15171a);
+    }
+    .cartanza-pagination .page-number {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: var(--color-secondary-text, #979797);
+    }
+    </style>
+
 {{/with}}
 {{/inline}}
 {{> default}}
